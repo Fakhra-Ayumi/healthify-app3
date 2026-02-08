@@ -21,6 +21,7 @@ const BottomNav = () => {
         left: 0,
         right: 0,
         bottom: 0,
+        padding: 1,
         zIndex: 1200,
         borderTopLeftRadius: 16,
         borderTopRightRadius: 16,
@@ -33,16 +34,24 @@ const BottomNav = () => {
         showLabels
         sx={{
           '& .MuiBottomNavigationAction-root': {
-            'color': '#000000',
+            color: '#000000',
+            '& .MuiSvgIcon-root': {
+              color: '#000000',
+            },
             '&:focus': {
               outline: 'none',
             },
             '&.Mui-focusVisible': {
-              outline: '2px solid #a34efe',
+              outline: 'none',
             }
           },
           '& .Mui-selected': {
-            'color': '#a34efe',
+            '&.MuiBottomNavigationAction-root': {
+              color: '#a34efe',
+            },
+            '& .MuiSvgIcon-root': {
+              color: '#a34efe',
+            },
           },
         }}
       >
