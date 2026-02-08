@@ -19,7 +19,6 @@ export const register = async (req: Request, res: Response) => {
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
-    // Create new user instance with provided details
     const newUser = new User({
       firstName,
       lastName,
@@ -32,10 +31,11 @@ export const register = async (req: Request, res: Response) => {
 
     // Generate JWT token for immediate login after registration
     const token = jwt.sign({ userId: newUser._id }, JWT_SECRET, { expiresIn: '7d' });
-
+    console.log(`User Registered: ${username}`);
     res.status(201).json({ token, user: { id: newUser._id, username: newUser.username } });
   } 
   catch (error) {
+    console.error("Registration Error:", error);
     res.status(500).json({ message: 'Server error during registration' });
   }
 };
@@ -57,10 +57,11 @@ export const login = async (req: Request, res: Response) => {
     }
 
     const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '7d' });
-
+    console.log(`User Logged In: ${username}`);
     res.json({ token, user: { id: user._id, username: user.username } });
   } 
   catch (error) {
+    console.error("Login Error:", error);
     res.status(500).json({ message: 'Server error during login' });
   }
 };

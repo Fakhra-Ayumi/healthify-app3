@@ -10,7 +10,7 @@ export interface IWorkout extends Document {
       parameter: 'Weight' | 'Time' | 'Distance' | 'Reps'; //TODO add more
       value: number;
       unit: string; 
-      status: 'completed' | 'incomplete' | 'partial' | 'none'; // The Ternary response
+      status: 'completed' | 'incomplete' | 'partial' | 'none';
     }[];
   }[];
 }
