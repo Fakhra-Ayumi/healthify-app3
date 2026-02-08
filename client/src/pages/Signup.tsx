@@ -69,14 +69,14 @@ const Signup = () => {
             fullWidth 
             type="submit" 
             variant="contained" 
-            sx={{ mt: 4, py: 1.5, borderRadius: 8, bgcolor: '#b473ff', fontWeight: 'bold' }}
+            sx={{ mt: 4, py: 1.5, borderRadius: 8, bgcolor: '#a34efe', fontWeight: 'bold' }}
           >
             Let's Start
           </Button>
         </form>
 
         <Typography sx={{ mt: 3 }}>
-          Already have an account? <Link href="/login" sx={{ fontWeight: 'bold', textDecoration: 'none', color: '#b473ff' }}>Sign In</Link>
+          Already have an account? <Link href="/login" sx={{ fontWeight: 'bold', textDecoration: 'none', color: '#a34efe' }}>Sign In</Link>
         </Typography>
       </Box>
     </Container>
