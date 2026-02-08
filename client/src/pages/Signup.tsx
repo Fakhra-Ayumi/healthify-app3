@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Box, TextField, Button, Typography, Container, Link } from '@mui/material';
 import Grid from '@mui/material/Grid';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const Signup = () => {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -24,6 +26,7 @@ const Signup = () => {
       const response = await axios.post('http://localhost:8000/api/auth/register', formData);
       localStorage.setItem('token', response.data.token);
       alert('Registration successful!');
+      navigate('/profile');
     } catch (err: any) {
       alert(err.response?.data?.message || 'Registration failed');
     }
@@ -66,14 +69,14 @@ const Signup = () => {
             fullWidth 
             type="submit" 
             variant="contained" 
-            sx={{ mt: 4, py: 1.5, borderRadius: 8, bgcolor: '#ce73ff', fontWeight: 'bold' }}
+            sx={{ mt: 4, py: 1.5, borderRadius: 8, bgcolor: '#b473ff', fontWeight: 'bold' }}
           >
             Let's Start
           </Button>
         </form>
 
         <Typography sx={{ mt: 3 }}>
-          Already have an account? <Link href="/login" sx={{ fontWeight: 'bold', textDecoration: 'none', color: '#ce73ff' }}>Sign In</Link>
+          Already have an account? <Link href="/login" sx={{ fontWeight: 'bold', textDecoration: 'none', color: '#b473ff' }}>Sign In</Link>
         </Typography>
       </Box>
     </Container>

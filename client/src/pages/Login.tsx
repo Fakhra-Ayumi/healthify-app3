@@ -93,11 +93,11 @@ const Login = () => {
                 mt: 4, 
                 py: 1.5, 
                 borderRadius: 8, 
-                bgcolor: '#ce73ff', 
+                bgcolor: '#b473ff', 
                 color: '#000000',
                 fontWeight: 'bold',
                 boxShadow: 'none',
-                '&:hover': { bgcolor: '#eac5fe' }
+                '&:hover': { bgcolor: '#dfc6fe' }
               }}
             >
               Sign In
@@ -107,7 +107,7 @@ const Login = () => {
           <Box sx={{ mt: 3, textAlign: 'center' }}>
             <Typography variant="body2">
               Don't have an account?{' '}
-              <Link href="/signup" sx={{ fontWeight: 'bold', textDecoration: 'none', color: '#ce73ff' }}>
+              <Link href="/signup" sx={{ fontWeight: 'bold', textDecoration: 'none', color: '#b473ff' }}>
                 Join Healthify
               </Link>
             </Typography>
