@@ -57,11 +57,11 @@ const ActivityItem: React.FC<ActivityItemProps> = ({ activity, onUpdate, onDelet
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'completed':
-        return <CheckIcon sx={{ fontSize: 20, color: 'success.main' }} />;
+        return <CheckIcon sx={{ fontSize: 20, color: '#82d727' }} />;
       case 'partial':
-        return <HourglassTopIcon sx={{ fontSize: 20, color: 'warning.main' }} />;
+        return <HourglassTopIcon sx={{ fontSize: 20, color: '#fea34e' }} />;
       case 'incomplete':
-        return <CloseIcon sx={{ fontSize: 20, color: 'error.main' }} />;
+        return <CloseIcon sx={{ fontSize: 20, color: '#fe4e80' }} />;
       default:
         return <CheckIcon sx={{ fontSize: 20, color: 'action.disabled' }} />;
     }
@@ -150,7 +150,7 @@ const ActivityItem: React.FC<ActivityItemProps> = ({ activity, onUpdate, onDelet
                 mt: 1,
                 cursor: 'pointer',
                 textDecoration: 'underline',
-                '&:hover': { color: '#b473ff' },
+                '&:hover': { color: '#a34efe' },
               }}
               onClick={() => setIsAddingSet(true)}
             >
@@ -181,19 +181,19 @@ const ActivityItem: React.FC<ActivityItemProps> = ({ activity, onUpdate, onDelet
             </MenuItem>
             <MenuItem value="completed">
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <CheckIcon sx={{ fontSize: 20, color: 'success.main' }} />
+                <CheckIcon sx={{ fontSize: 20, color: '#82d727' }} />
                 <Typography variant="body2">Completed</Typography>
               </Box>
             </MenuItem>
             <MenuItem value="partial">
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <HourglassTopIcon sx={{ fontSize: 20, color: 'warning.main' }} />
+                <HourglassTopIcon sx={{ fontSize: 20, color: '#fea34e' }} />
                 <Typography variant="body2">Partial</Typography>
               </Box>
             </MenuItem>
             <MenuItem value="incomplete">
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <CloseIcon sx={{ fontSize: 20, color: 'error.main' }} />
+                <CloseIcon sx={{ fontSize: 20, color: '#fe4e80' }} />
                 <Typography variant="body2">Incomplete</Typography>
               </Box>
             </MenuItem>

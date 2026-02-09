@@ -32,6 +32,18 @@ const ParameterSetInput: React.FC<ParameterSetInputProps> = ({
         return ['times'];
       case 'Sets':
         return ['times'];
+      case 'Rest':
+        return ['min', 's'];
+      case 'Incline':
+        return ['%'];
+      case 'Speed':
+        return ['km/h', 'mph'];
+      case 'Resistance':
+        return ['Level'];
+      case 'Cadence':
+        return ['rpm', 'spm'];
+      case 'Height':
+        return ['cm', 'in'];
       default:
         return [''];
     }
@@ -77,6 +89,12 @@ const ParameterSetInput: React.FC<ParameterSetInputProps> = ({
           <MenuItem value="Weight">Weight</MenuItem>
           <MenuItem value="Reps">Reps</MenuItem>
           <MenuItem value="Sets">Sets</MenuItem>
+          <MenuItem value="Rest">Rest</MenuItem>
+          <MenuItem value="Incline">Incline</MenuItem>
+          <MenuItem value="Speed">Speed</MenuItem>
+          <MenuItem value="Resistance">Resistance</MenuItem>
+          <MenuItem value="Cadence">Cadence</MenuItem>
+          <MenuItem value="Height">Height</MenuItem>
         </Select>
       </FormControl>
 

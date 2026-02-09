@@ -65,6 +65,7 @@ const MenuCard: React.FC<MenuCardProps> = ({
         overflow: 'hidden',
         border: '1px solid',
         borderColor: 'divider',
+        bgcolor: '#e0c6fe',
       }}
     >
       {/* Card Header */}
@@ -165,7 +166,7 @@ const MenuCard: React.FC<MenuCardProps> = ({
               <Typography variant="body2" color="text.secondary">
                 Add an Activity...
               </Typography>
-              <AddIcon sx={{ color: '#b473ff', fontSize: 20 }} />
+              <AddIcon sx={{ color: '#a34efe', fontSize: 20 }} />
             </Paper>
           ) : (
             <ActivityForm
@@ -217,7 +218,7 @@ const ActivityForm: React.FC<ActivityFormProps> = ({ onSave, onCancel }) => {
         <IconButton
           size="small"
           onClick={handleSave}
-          sx={{ bgcolor: '#b473ff', color: '#fff', '&:hover': { bgcolor: '#a34efe' } }}
+          sx={{ bgcolor: '#a34efe', color: '#fff', '&:hover': { bgcolor: '#e0c6fe' } }}
         >
           <AddIcon />
         </IconButton>

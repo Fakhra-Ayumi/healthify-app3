@@ -95,7 +95,7 @@ const RoutineBuilder = () => {
         <Typography variant="body1" color="text.secondary">
           Add a Menu...
         </Typography>
-        <AddIcon sx={{ color: '#b473ff' }} />
+        <AddIcon sx={{ color: '#a34efe' }} />
       </Paper>
     </Box>
   );

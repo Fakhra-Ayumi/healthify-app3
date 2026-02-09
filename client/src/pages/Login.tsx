@@ -105,7 +105,7 @@ const Login = () => {
           <Box sx={{ mt: 3, textAlign: 'center' }}>
             <Typography variant="body2">
               Don't have an account?{' '}
-              <Link href="/signup" sx={{ fontWeight: 'bold', textDecoration: 'none', color: '#a24efe' }}>
+              <Link href="/signup" sx={{ fontWeight: 'bold', textDecoration: 'none', color: '#a34efe' }}>
                 Join Healthify
               </Link>
             </Typography>
