@@ -23,7 +23,7 @@ const MenuCard: React.FC<MenuCardProps> = ({
   onDelete,
 }) => {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
-  const [editedTitle, setEditedTitle] = useState(workout.title);
+  const [editedTitle, setEditedTitle] = useState(workout.title || '');
   const [isAddingActivity, setIsAddingActivity] = useState(false);
 
   /* Update workout title */
@@ -87,6 +87,7 @@ const MenuCard: React.FC<MenuCardProps> = ({
             <TextField
               size="small"
               value={editedTitle}
+              placeholder="Menu title"
               onChange={(e) => setEditedTitle(e.target.value)}
               onBlur={handleTitleChange}
               onKeyDown={(e) => {
@@ -109,7 +110,7 @@ const MenuCard: React.FC<MenuCardProps> = ({
                 setIsEditingTitle(true);
               }}
             >
-              {workout.day} - {workout.title}
+              {workout.title || 'Menu title'}
             </Typography>
           )}
         </Box>

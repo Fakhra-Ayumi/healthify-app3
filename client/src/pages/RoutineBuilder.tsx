@@ -30,7 +30,7 @@ const RoutineBuilder = () => {
   const handleAddMenu = () => {
     const newWorkout: Workout = {
       day: getDayName(workouts.length),
-      title: 'Workout',
+      title: '',
       activities: [],
     };
     const updated = [...workouts, newWorkout];

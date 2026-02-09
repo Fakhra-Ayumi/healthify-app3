@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { Box, Paper, Typography, IconButton, Chip } from '@mui/material';
+import { Box, Paper, Typography, IconButton, Chip, Select, MenuItem } from '@mui/material';
+import type { SelectChangeEvent } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CheckIcon from '@mui/icons-material/Check';
-import WarningIcon from '@mui/icons-material/Warning';
+import HourglassTopIcon from '@mui/icons-material/HourglassTop';
 import CloseIcon from '@mui/icons-material/Close';
 import EditIcon from '@mui/icons-material/Edit';
 import type { Activity, Set as WorkoutSet } from '../types/workout';
@@ -44,29 +45,25 @@ const ActivityItem: React.FC<ActivityItemProps> = ({ activity, onUpdate, onDelet
     });
   };
 
-  /* Toggle set status through completed → incomplete → partial → none */
-  const handleToggleStatus = () => {
-    const statusCycle: WorkoutSet['status'][] = ['none', 'completed', 'partial', 'incomplete'];
-    const currentIndex = statusCycle.indexOf(activity.sets[0]?.status || 'none');
-    const nextStatus = statusCycle[(currentIndex + 1) % statusCycle.length];
-    
+  /* Handle status change via dropdown */
+  const handleStatusChange = (event: SelectChangeEvent<string>) => {
+    const newStatus = event.target.value as WorkoutSet['status'];
     onUpdate({
       ...activity,
-      sets: activity.sets.map((s) => ({ ...s, status: nextStatus })),
+      sets: activity.sets.map((s) => ({ ...s, status: newStatus })),
     });
   };
 
-  const getStatusIcon = () => {
-    const status = activity.sets[0]?.status || 'none';
+  const getStatusIcon = (status: string) => {
     switch (status) {
       case 'completed':
         return <CheckIcon sx={{ fontSize: 20, color: 'success.main' }} />;
       case 'partial':
-        return <WarningIcon sx={{ fontSize: 20, color: 'warning.main' }} />;
+        return <HourglassTopIcon sx={{ fontSize: 20, color: 'warning.main' }} />;
       case 'incomplete':
         return <CloseIcon sx={{ fontSize: 20, color: 'error.main' }} />;
       default:
-        return null;
+        return <CheckIcon sx={{ fontSize: 20, color: 'action.disabled' }} />;
     }
   };
 
@@ -163,10 +160,44 @@ const ActivityItem: React.FC<ActivityItemProps> = ({ activity, onUpdate, onDelet
         </Box>
 
         {/* Action Icons */}
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5, ml: 2 }}>
-          <IconButton size="small" onClick={handleToggleStatus}>
-            {getStatusIcon() || <CheckIcon sx={{ fontSize: 20, color: 'action.disabled' }} />}
-          </IconButton>
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.5, ml: 2 }}>
+          <Select
+            value={activity.sets[0]?.status || 'none'}
+            onChange={handleStatusChange}
+            variant="standard"
+            disableUnderline
+            displayEmpty
+            renderValue={(value) => getStatusIcon(value)}
+            sx={{
+              minWidth: 'auto',
+              '& .MuiSelect-select': { p: 0.5, display: 'flex' },
+            }}
+          >
+            <MenuItem value="none">
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <CheckIcon sx={{ fontSize: 20, color: 'action.disabled' }} />
+                <Typography variant="body2">Not Started</Typography>
+              </Box>
+            </MenuItem>
+            <MenuItem value="completed">
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <CheckIcon sx={{ fontSize: 20, color: 'success.main' }} />
+                <Typography variant="body2">Completed</Typography>
+              </Box>
+            </MenuItem>
+            <MenuItem value="partial">
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <HourglassTopIcon sx={{ fontSize: 20, color: 'warning.main' }} />
+                <Typography variant="body2">Partial</Typography>
+              </Box>
+            </MenuItem>
+            <MenuItem value="incomplete">
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <CloseIcon sx={{ fontSize: 20, color: 'error.main' }} />
+                <Typography variant="body2">Incomplete</Typography>
+              </Box>
+            </MenuItem>
+          </Select>
           <IconButton size="small" onClick={onDelete} sx={{ color: 'error.main' }}>
             <DeleteIcon sx={{ fontSize: 20 }} />
           </IconButton>

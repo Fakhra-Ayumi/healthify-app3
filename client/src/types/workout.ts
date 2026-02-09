@@ -1,5 +1,5 @@
 // Client-side types matching server Workout model
-export type ParameterType = 'Weight' | 'Time' | 'Distance' | 'Reps';
+export type ParameterType = 'Weight' | 'Time' | 'Distance' | 'Reps' | 'Sets'; //TODO add more
 export type SetStatus = 'completed' | 'incomplete' | 'partial' | 'none';
 
 export interface Set {
