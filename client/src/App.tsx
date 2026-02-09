@@ -3,8 +3,8 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 import AppShell from './layouts/AppShell';
 import Profile from './pages/Profile';
+import RoutineBuilder from './pages/RoutineBuilder';
 
-const RoutineBuilder = () => <div>Routine Builder</div>;
 const Milestones = () => <div>Milestones</div>;
 
 function App() {
@@ -15,14 +15,15 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
 
-        {/* App routes */}
-        <Route element={<AppShell />}>
-          <Route path="/" element={<RoutineBuilder />} />
-          <Route path="/milestones" element={<Milestones />} />
-          <Route path="/profile" element={<Profile />} />
+        {/* App major routes grouped under /app so root stays on authentication page */}
+        <Route path="/app" element={<AppShell />}>
+          <Route index element={<RoutineBuilder />} />
+          <Route path="milestones" element={<Milestones />} />
+          <Route path="profile" element={<Profile />} />
         </Route>
 
-        {/* Fallback */}
+        {/* Default entry should be login */}
+        <Route path="/" element={<Navigate to="/login" />} />
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>
     </Router>

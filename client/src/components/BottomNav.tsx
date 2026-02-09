@@ -54,10 +54,10 @@ const BottomNav = () => {
             },
           },
         }}
-      >
-        <BottomNavigationAction label="Milestones" value="/milestones" icon={<TimelineIcon />} />
-        <BottomNavigationAction label="Routine" value="/" icon={<FitnessCenterIcon />} />
-        <BottomNavigationAction label="Profile" value="/profile" icon={<AccountCircleIcon />} />
+        >
+        <BottomNavigationAction label="Milestones" value="/app/milestones" icon={<TimelineIcon />} />
+        <BottomNavigationAction label="Routine" value="/app" icon={<FitnessCenterIcon />} />
+        <BottomNavigationAction label="Profile" value="/app/profile" icon={<AccountCircleIcon />} />
       </BottomNavigation>
     </Paper>
   );

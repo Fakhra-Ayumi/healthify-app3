@@ -26,7 +26,7 @@ const Signup = () => {
       const response = await axios.post('http://localhost:8000/api/auth/register', formData);
       localStorage.setItem('token', response.data.token);
       alert('Registration successful!');
-      navigate('/profile');
+      navigate('/app');
     } catch (err: any) {
       alert(err.response?.data?.message || 'Registration failed');
     }

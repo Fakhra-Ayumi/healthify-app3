@@ -26,7 +26,6 @@ const Login = () => {
    * Using SyntheticEvent as a robust fallback for TypeScript event typing.
    */
   const handleLogin = async (e: React.SyntheticEvent) => {
-    // Prevents the browser from reloading the page on form submission
     e.preventDefault();
 
     try {
@@ -38,9 +37,8 @@ const Login = () => {
       localStorage.setItem('user', JSON.stringify(user));
 
       alert(`Welcome back, ${user.username}!`);
-      navigate('/profile');
+      navigate('/app');
       
-      // TODO: Add navigation hook (useNavigate) to transition to the Dashboard
     } catch (err: any) {
       /*  Error Handling: Checks for specific backend messages
           before falling back to a generic network error message. */
@@ -57,7 +55,7 @@ const Login = () => {
             Healthify
           </Typography>
           <Typography variant="body2" align="center" color="textSecondary" sx={{ mb: 4 }}>
-            Sign in to continue your streak
+            Log in to continue your streak
           </Typography>
 
           <form onSubmit={handleLogin}>
@@ -100,7 +98,7 @@ const Login = () => {
                 '&:hover': { bgcolor: '#e0c6fe' }
               }}
             >
-              Sign In
+              Log In
             </Button>
           </form>
 

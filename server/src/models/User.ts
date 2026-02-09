@@ -25,7 +25,7 @@ const UserSchema = new Schema<IUser>({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   
-  // Goals and Memos from your sketches
+  // Goals and Memos
   purpose: { type: String, default: "" },
   threeMonthGoal: { type: String, default: "" },
   monthlyGoal: { type: String, default: "" },

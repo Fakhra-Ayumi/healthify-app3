@@ -7,10 +7,10 @@ export interface IWorkout extends Document {
   activities: {
     name: string;
     sets: {
-      parameter: 'Weight' | 'Time' | 'Distance' | 'Reps'; //TODO add more
+      parameter: 'Weight' | 'Time' | 'Distance' | 'Reps' | 'Sets'; //TODO add more
       value: number;
       unit: string; 
-      status: 'completed' | 'incomplete' | 'partial' | 'none';
+      status: 'completed' | 'incomplete' | 'partial' | 'none'; // TODO: Use this
     }[];
   }[];
 }
@@ -25,7 +25,7 @@ const WorkoutSchema = new Schema<IWorkout>({
     sets: [{
       parameter: { 
         type: String, 
-        enum: ['Weight', 'Time', 'Distance', 'Reps'], //TODO add more
+        enum: ['Weight', 'Time', 'Distance', 'Reps', 'Sets'], //TODO add more
         required: true 
       },
       value: { type: Number, required: true },
