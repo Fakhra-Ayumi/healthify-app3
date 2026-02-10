@@ -28,7 +28,14 @@ const MenuCard: React.FC<MenuCardProps> = ({
 
   /* Update workout title */
   const handleTitleChange = () => {
-    onUpdate({ ...workout, title: editedTitle });
+    const trimmedTitle = editedTitle.trim();
+    if (!trimmedTitle) {
+      // Revert to original title if empty
+      setEditedTitle(workout.title || 'New Routine');
+      setIsEditingTitle(false);
+      return;
+    }
+    onUpdate({ ...workout, title: trimmedTitle });
     setIsEditingTitle(false);
   };
 

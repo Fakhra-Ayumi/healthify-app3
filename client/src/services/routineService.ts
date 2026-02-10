@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { Workout } from '../types/workout';
+import type { Workout } from '../types/workout';
 
 const API_URL = 'http://localhost:8000/api/workouts';
 

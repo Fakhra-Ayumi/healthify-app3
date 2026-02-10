@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Box, Paper, Typography, IconButton, Chip, Select, MenuItem } from '@mui/material';
+import { Box, Paper, Typography, IconButton, Select, MenuItem } from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CheckIcon from '@mui/icons-material/Check';

@@ -17,10 +17,12 @@ export const authenticateToken = (req: AuthRequest, res: Response, next: NextFun
   }
 
   try {
-    const verified = jwt.verify(token, JWT_SECRET);
+    const verified = jwt.verify(token, JWT_SECRET) as any;
     req.user = verified;
+    console.log('✓ Auth Success - User ID:', verified.userId);
     next();
   } catch (error) {
+    console.error('✗ Auth Failed:', error);
     res.status(403).json({ message: 'Invalid token.' });
   }
 };

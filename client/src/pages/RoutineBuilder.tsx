@@ -3,49 +3,80 @@ import { Box, Typography, Paper } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import type { Workout } from '../types/workout';
 import MenuCard from '../components/MenuCard';
+import { fetchWorkouts, createWorkout, updateWorkoutService, deleteWorkoutService } from '../services/routineService';
 
-const RoutineBuilder = () => {
+const RoutineBuilder: React.FC = () => {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
   const [expandedMenuId, setExpandedMenuId] = useState<string | null>(null);
 
-  /* Load workouts from localStorage on mount */
+  /* Load workouts from server on mount */
   useEffect(() => {
-    const stored = localStorage.getItem('healthify-workouts');
-    if (stored) {
+    const loadWorkouts = async () => {
       try {
-        setWorkouts(JSON.parse(stored));
+        const data = await fetchWorkouts();
+        setWorkouts(data);
       } catch (err) {
         console.error('Failed to load workouts:', err);
       }
-    }
+    };
+    loadWorkouts();
   }, []);
 
-  /* Save workouts to localStorage whenever they change */
-  useEffect(() => {
-    if (workouts.length > 0) {
-      localStorage.setItem('healthify-workouts', JSON.stringify(workouts));
-    }
-  }, [workouts]);
-
-  const handleAddMenu = () => {
+  const handleAddMenu = async () => {
     const newWorkout: Workout = {
       day: getDayName(workouts.length),
-      title: '',
+      title: 'Menu Title',
       activities: [],
     };
-    const updated = [...workouts, newWorkout];
-    setWorkouts(updated);
-    setExpandedMenuId(`${workouts.length}`); // Auto-expand new menu
+
+    // Optimistic update
+    const tempId = `temp-${Date.now()}`;
+    const optimisticWorkout = { ...newWorkout, _id: tempId } as Workout;
+    setWorkouts(prev => [...prev, optimisticWorkout]);
+    setExpandedMenuId(tempId);
+
+    try {
+      const savedWorkout = await createWorkout(newWorkout);
+      // Replace temp workout with real one
+      setWorkouts(prev => prev.map(w => (w._id === tempId ? savedWorkout : w)));
+      if (savedWorkout._id) setExpandedMenuId(savedWorkout._id);
+    } catch (err) {
+      console.error('Failed to add workout:', err);
+      // Revert optimistic update
+      setWorkouts(prev => prev.filter(w => w._id !== tempId));
+      setExpandedMenuId(null);
+    }
   };
 
-  const handleUpdateWorkout = (index: number, updated: Workout) => {
-    const newWorkouts = [...workouts];
-    newWorkouts[index] = updated;
-    setWorkouts(newWorkouts);
+  const handleUpdateWorkout = async (index: number, updated: Workout) => {
+    // Optimistic update
+    setWorkouts(prev => {
+      const copy = [...prev];
+      copy[index] = updated;
+      return copy;
+    });
+
+    try {
+      if (updated._id && !updated._id.startsWith('temp-')) {
+        await updateWorkoutService(updated._id, updated);
+      }
+    } catch (err) {
+      console.error('Failed to update workout:', err);
+    }
   };
 
-  const handleDeleteWorkout = (index: number) => {
-    setWorkouts(workouts.filter((_, i) => i !== index));
+  const handleDeleteWorkout = async (index: number) => {
+    const workoutToDelete = workouts[index];
+    // Optimistic update
+    setWorkouts(prev => prev.filter((_, i) => i !== index));
+
+    try {
+      if (workoutToDelete._id && !workoutToDelete._id.startsWith('temp-')) {
+        await deleteWorkoutService(workoutToDelete._id);
+      }
+    } catch (err) {
+      console.error('Failed to delete workout:', err);
+    }
   };
 
   const getDayName = (index: number): string => {
@@ -65,10 +96,13 @@ const RoutineBuilder = () => {
       {/* Menu Cards */}
       {workouts.map((workout, index) => (
         <MenuCard
-          key={index}
+          key={workout._id || index}
           workout={workout}
-          isExpanded={expandedMenuId === `${index}`}
-          onToggleExpand={() => setExpandedMenuId(expandedMenuId === `${index}` ? null : `${index}`)}
+          isExpanded={expandedMenuId === (workout._id || String(index))}
+          onToggleExpand={() => {
+            const id = workout._id || String(index);
+            setExpandedMenuId(expandedMenuId === id ? null : id);
+          }}
           onUpdate={(updated) => handleUpdateWorkout(index, updated)}
           onDelete={() => handleDeleteWorkout(index)}
         />
