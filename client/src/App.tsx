@@ -22,7 +22,7 @@ function App() {
           <Route path="profile" element={<Profile />} />
         </Route>
 
-        {/* Default entry should be login */}
+        {/* Setting the default entry to be login */}
         <Route path="/" element={<Navigate to="/login" />} />
         <Route path="*" element={<Navigate to="/login" />} />
       </Routes>

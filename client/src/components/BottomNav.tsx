@@ -26,6 +26,7 @@ const BottomNav = () => {
         borderTopLeftRadius: 16,
         borderTopRightRadius: 16,
         overflow: 'hidden',
+        bgcolor: '#000000',
       }}
     >
       <BottomNavigation
@@ -33,10 +34,11 @@ const BottomNav = () => {
         onChange={handleChange}
         showLabels
         sx={{
+          bgcolor: '#000000',
           '& .MuiBottomNavigationAction-root': {
-            color: '#000000',
+            color: '#ffffff',
             '& .MuiSvgIcon-root': {
-              color: '#000000',
+              color: '#ffffff',
             },
             '&:focus': {
               outline: 'none',

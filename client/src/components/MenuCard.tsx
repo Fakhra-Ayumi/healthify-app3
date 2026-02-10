@@ -64,7 +64,7 @@ const MenuCard: React.FC<MenuCardProps> = ({
         borderRadius: 2,
         overflow: 'hidden',
         border: '1px solid',
-        borderColor: 'divider',
+        borderColor: 'rgba(0,0,0,0.4)',
         bgcolor: '#e0c6fe',
       }}
     >
@@ -81,7 +81,7 @@ const MenuCard: React.FC<MenuCardProps> = ({
         onClick={onToggleExpand}
       >
         <Box sx={{ display: 'flex', alignItems: 'center', flex: 1 }}>
-          <IconButton size="small" sx={{ mr: 1 }}>
+          <IconButton size="small" sx={{ mr: 1, color: 'text.primary' }}>
             {isExpanded ? <ExpandMoreIcon /> : <ChevronRightIcon />}
           </IconButton>
           {isEditingTitle ? (
@@ -104,8 +104,8 @@ const MenuCard: React.FC<MenuCardProps> = ({
             />
           ) : (
             <Typography
-              variant="h6"
-              sx={{ fontWeight: 'bold' }}
+              variant="h5"
+              sx={{ fontWeight: 'bold', fontSize: '1.4rem' }}
               onDoubleClick={(e) => {
                 e.stopPropagation();
                 setIsEditingTitle(true);
@@ -116,7 +116,7 @@ const MenuCard: React.FC<MenuCardProps> = ({
           )}
         </Box>
         {!isExpanded && workout.activities.length > 0 && (
-          <Typography variant="body2" color="text.secondary" sx={{ mr: 1 }}>
+          <Typography variant="body1" color="text.secondary" sx={{ mr: 1 }}>
             {workout.activities.map((a) => a.name).join(', ')}
           </Typography>
         )}
@@ -124,9 +124,14 @@ const MenuCard: React.FC<MenuCardProps> = ({
           size="small"
           onClick={(e) => {
             e.stopPropagation();
-            onDelete();
+            if (window.confirm(`Delete ${workout.title || 'this menu'}?`)) {
+              onDelete();
+            }
           }}
-          sx={{ color: 'error.main' }}
+          sx={{ 
+            color: 'action.active', 
+            '&:hover': { color: '#e63939', bgcolor: 'rgba(239, 83, 80, 0.08)' } 
+          }}
         >
           <DeleteIcon />
         </IconButton>
@@ -221,9 +226,6 @@ const ActivityForm: React.FC<ActivityFormProps> = ({ onSave, onCancel }) => {
           sx={{ bgcolor: '#a34efe', color: '#fff', '&:hover': { bgcolor: '#e0c6fe' } }}
         >
           <AddIcon />
-        </IconButton>
-        <IconButton size="small" onClick={onCancel} sx={{ bgcolor: 'action.hover' }}>
-          <DeleteIcon />
         </IconButton>
       </Box>
     </Box>

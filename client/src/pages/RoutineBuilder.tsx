@@ -57,7 +57,7 @@ const RoutineBuilder = () => {
     <Box sx={{ pb: 2 }}>
       <Typography
         variant="h5"
-        sx={{ fontWeight: 'bold', mb: 3, textAlign: 'center' }}
+        sx={{ fontWeight: 'bold', mb: 3, textAlign: 'center', color: '#000000' }}
       >
         Healthify Routine Builder
       </Typography>

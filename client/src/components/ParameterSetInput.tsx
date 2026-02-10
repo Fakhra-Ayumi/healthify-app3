@@ -75,7 +75,13 @@ const ParameterSetInput: React.FC<ParameterSetInputProps> = ({
   }, [parameter, unit]);
 
   return (
-    <Box sx={{ display: 'flex', gap: 1, alignItems: 'flex-start', flexWrap: 'wrap' }}>
+    <Box sx={{ 
+      display: 'flex', 
+      gap: 1, 
+      alignItems: 'flex-start', 
+      flexWrap: 'wrap',
+      '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(0,0,0,0.4)' },
+    }}>
       {/* Parameter Dropdown */}
       <FormControl size="small" sx={{ minWidth: 120 }}>
         <InputLabel>Parameter</InputLabel>

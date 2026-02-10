@@ -74,62 +74,74 @@ const ActivityItem: React.FC<ActivityItemProps> = ({ activity, onUpdate, onDelet
         mb: 1.5,
         p: 1.5,
         border: '1px solid',
-        borderColor: 'divider',
+        borderColor: 'rgba(0,0,0,0.4)',
         borderRadius: 2,
       }}
     >
       <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
         {/* Activity Name */}
         <Box sx={{ flex: 1 }}>
-          <Typography variant="body1" sx={{ fontWeight: 'bold', mb: 1 }}>
+          <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1.5, fontSize: '1.15rem' }}>
             {activity.name}
           </Typography>
 
-          {/* Display Sets */}
-          {activity.sets.map((set, index) => (
-            <Box
-              key={index}
-              sx={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: 1,
-                mb: 0.5,
-                flexWrap: 'wrap',
-              }}
-            >
-              {editingSetIndex === index ? (
-                <Box sx={{ width: '100%' }}>
-                  <ParameterSetInput
-                    initialSet={set}
-                    onSave={(updated) => handleUpdateSet(index, updated)}
-                    onCancel={() => setEditingSetIndex(null)}
-                  />
-                </Box>
-              ) : (
-                <>
-                  <Chip
-                    label={set.parameter}
-                    size="small"
-                    sx={{ bgcolor: 'action.hover', fontWeight: 'bold' }}
-                  />
-                  <Typography variant="body2">
-                    {set.value} {set.unit}
-                  </Typography>
-                  <Box sx={{ ml: 'auto', display: 'flex', gap: 0.5 }}>
-                    <IconButton size="small" onClick={() => setEditingSetIndex(index)}>
-                      <EditIcon sx={{ fontSize: 16 }} />
-                    </IconButton>
-                    <IconButton
-                      size="small"
-                      onClick={() => handleDeleteSet(index)}
-                    >
-                      <DeleteIcon sx={{ fontSize: 16 }} />
-                    </IconButton>
+          {/* Display Sets in horizontal flexible row */}
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+            {activity.sets.map((set, index) => (
+              <Box
+                key={index}
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  bgcolor: 'action.hover', 
+                  borderRadius: 1,
+                  px: 1.5,
+                  py: 0.75,
+                  maxWidth: '100%',
+                  gap: 1,
+                }}
+              >
+                {editingSetIndex === index ? (
+                  <Box sx={{ width: '100%', minWidth: 200 }}>
+                    <ParameterSetInput
+                      initialSet={set}
+                      onSave={(updated) => handleUpdateSet(index, updated)}
+                      onCancel={() => setEditingSetIndex(null)}
+                    />
                   </Box>
-                </>
-              )}
-            </Box>
-          ))}
+                ) : (
+                  <>
+                    <Typography 
+                      variant="body1" 
+                      sx={{ fontWeight: 'bold' }}
+                    >
+                      {set.parameter}:
+                    </Typography>
+
+                    <Typography variant="body1">
+                      {set.value} {set.unit}
+                    </Typography>
+
+                    <Box sx={{ display: 'flex', ml: 1 }}>
+                      <IconButton size="small" onClick={() => setEditingSetIndex(index)}>
+                        <EditIcon sx={{ fontSize: 18 }} />
+                      </IconButton>
+                      <IconButton
+                        size="small"
+                        onClick={() => handleDeleteSet(index)}
+                        sx={{ 
+                          color: 'action.active', 
+                          '&:hover': { color: '#ef5350', bgcolor: 'rgba(239, 83, 80, 0.08)' } 
+                        }}
+                      >
+                        <DeleteIcon sx={{ fontSize: 18 }} />
+                      </IconButton>
+                    </Box>
+                  </>
+                )}
+              </Box>
+            ))}
+          </Box>
 
           {/* Add Set Form */}
           {isAddingSet && (
@@ -144,12 +156,13 @@ const ActivityItem: React.FC<ActivityItemProps> = ({ activity, onUpdate, onDelet
           {/* Add More Parameters Button */}
           {!isAddingSet && (
             <Typography
-              variant="body2"
+              variant="body1"
               color="text.secondary"
               sx={{
                 mt: 1,
                 cursor: 'pointer',
                 textDecoration: 'underline',
+                fontSize: '1rem',
                 '&:hover': { color: '#a34efe' },
               }}
               onClick={() => setIsAddingSet(true)}
@@ -198,7 +211,14 @@ const ActivityItem: React.FC<ActivityItemProps> = ({ activity, onUpdate, onDelet
               </Box>
             </MenuItem>
           </Select>
-          <IconButton size="small" onClick={onDelete} sx={{ color: 'error.main' }}>
+          <IconButton 
+            size="small" 
+            onClick={onDelete} 
+            sx={{ 
+              color: 'action.active', 
+              '&:hover': { color: '#ef5350', bgcolor: 'rgba(239, 83, 80, 0.08)' } 
+            }}
+          >
             <DeleteIcon sx={{ fontSize: 20 }} />
           </IconButton>
         </Box>
