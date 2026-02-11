@@ -18,12 +18,8 @@ const Login = () => {
   };
 
   /**
-   * Handles authentication via the backend API.
-   * On success, stores the JWT in localStorage for persistent sessions.
-   */
-  /**
    * Processes the login attempt.
-   * Using SyntheticEvent as a robust fallback for TypeScript event typing.
+   * On success, stores the JWT in localStorage for persistent sessions.
    */
   const handleLogin = async (e: React.SyntheticEvent) => {
     e.preventDefault();

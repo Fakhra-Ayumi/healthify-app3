@@ -81,7 +81,6 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
     // Evaluate badges
     if (updatedUser) {
       const finalUser = await evaluateBadges(userId);
-      console.log(`User Updated: ${finalUser?.username}`);
       return res.json(finalUser);
     }
     
@@ -120,7 +119,6 @@ export const register = async (req: Request, res: Response) => {
 
     // Generate JWT token for immediate login after registration
     const token = jwt.sign({ userId: newUser._id }, JWT_SECRET, { expiresIn: '7d' });
-    console.log(`User Registered: ${username}`);
     res.status(201).json({ token, user: { id: newUser._id, username: newUser.username } });
   } 
   catch (error) {
@@ -146,7 +144,6 @@ export const login = async (req: Request, res: Response) => {
     }
 
     const token = jwt.sign({ userId: user._id }, JWT_SECRET, { expiresIn: '7d' });
-    console.log(`User Logged In: ${username}`);
     res.json({ token, user: { id: user._id, username: user.username } });
   } 
   catch (error) {

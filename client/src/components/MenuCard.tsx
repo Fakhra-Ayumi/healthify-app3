@@ -78,8 +78,7 @@ const MenuCard: React.FC<MenuCardProps> = ({
         mb: 2,
         borderRadius: 2,
         overflow: 'hidden',
-        border: '1px solid',
-        borderColor: 'rgba(0,0,0,0.4)',
+        border: '1.5px solid #000',
         bgcolor: '#e0c6fe',
       }}
     >

@@ -11,6 +11,7 @@ import DirectionsRunIcon from '@mui/icons-material/DirectionsRun';
 import DirectionsBikeIcon from '@mui/icons-material/DirectionsBike';
 import SelfImprovementIcon from '@mui/icons-material/SelfImprovement';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import CheckIcon from '@mui/icons-material/Check';
 
 import { fetchUserProfile, updateUserProfile, fetchBadges, type UserProfile, type Badge } from '../services/userService';
 
@@ -526,7 +527,7 @@ const Profile = () => {
           <Box 
             sx={{ 
               display: 'grid', 
-              gridTemplateColumns: 'repeat(auto-fit, minmax(32px, 1fr))', // Responsive grid
+              gridTemplateColumns: 'repeat(auto-fit, minmax(44px, 1fr))', // Increased size for circles
               gap: 1.5,
               mt: 1,
               width: '100%'
@@ -548,25 +549,26 @@ const Profile = () => {
               const isFuture = dateForCircle.getTime() > today.getTime();
 
               return (
-                <Box
-                  key={index}
-                  sx={{
-                    width: 32,
-                    height: 32,
-                    borderRadius: '50%',
-                    bgcolor: isRecorded ? '#a34efe' : 'transparent',
-                    border: '3px solid',
-                    borderColor: isFuture ? '#eee' : '#a34efe',
-                    color: isRecorded ? '#fff' : (isFuture ? '#ccc' : '#000'),
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    fontSize: '0.75rem',
-                    fontWeight: 'bold',
-                    boxShadow: isRecorded ? 'inset 0 0 0 2px #e0c6fe' : 'none',
-                  }}
-                >
-                  {dayNumber}
+                <Box key={index} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+                  <Box
+                    sx={{
+                      width: 44, 
+                      height: 44, 
+                      borderRadius: '50%',
+                      bgcolor: isRecorded ? 'transparent' : 'transparent',
+                      border: '2px solid',
+                      borderColor: isFuture ? '#eee' : '#000',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      mb: 0.5
+                    }}
+                  >
+                    {isRecorded && <CheckIcon sx={{ color: '#000', fontSize: 24, stroke: '#000', strokeWidth: 2 }} />}
+                  </Box>
+                  <Typography variant="caption" sx={{ color: isFuture ? '#ccc' : '#000', fontWeight: 'bold' }}>
+                    {dayNumber}
+                  </Typography>
                 </Box>
               );
             })}
