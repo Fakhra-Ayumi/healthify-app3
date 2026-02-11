@@ -14,10 +14,10 @@ export const evaluateBadges = async (userId: string): Promise<IUser | null> => {
     let earned = false;
     switch (badge.criteriaType) {
       case 'weekly_goal':
-        earned = user.weeklyGoalCompletions >= badge.criteriaValue;
+        earned = user.weeklyGoalCompletions >= badge.criteriaValue && user.weeklyGoalLockInCount >= badge.criteriaValue;
         break;
       case 'three_month_goal':
-        earned = user.threeMonthGoalCompletions >= badge.criteriaValue;
+        earned = user.threeMonthGoalCompletions >= badge.criteriaValue && user.threeMonthGoalLockInCount >= badge.criteriaValue;
         break;
       case 'streak':
         earned = user.streakCompletions >= badge.criteriaValue;

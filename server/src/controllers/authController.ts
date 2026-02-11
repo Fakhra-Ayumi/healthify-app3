@@ -24,12 +24,6 @@ export const getProfile = async (req: AuthRequest, res: Response) => {
 export const updateProfile = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?.userId;
-    const { 
-      firstName, lastName, purpose, 
-      threeMonthGoal, threeMonthGoalStatus, 
-      weeklyGoal, weeklyGoalStatus,
-      streakGoal, currentStreak, profileImage, badges 
-    } = req.body;
 
     // Check if goals are being completed (increment counters)
     const currentUser = await User.findById(userId);
@@ -37,26 +31,47 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
 
     let incWeekly = 0;
     let incThreeMonth = 0;
+    let incWeeklyLockIn = 0;
+    let incThreeMonthLockIn = 0;
 
-    if (weeklyGoalStatus === 'completed' && currentUser.weeklyGoalStatus !== 'completed') {
+    if (req.body.weeklyGoalStatus === 'completed' && currentUser.weeklyGoalStatus !== 'completed') {
       incWeekly = 1;
     }
-    if (threeMonthGoalStatus === 'completed' && currentUser.threeMonthGoalStatus !== 'completed') {
+    if (req.body.threeMonthGoalStatus === 'completed' && currentUser.threeMonthGoalStatus !== 'completed') {
       incThreeMonth = 1;
+    }
+    if (req.body.weeklyGoalLockIn && !currentUser.weeklyGoalLockIn) {
+      incWeeklyLockIn = 1;
+    }
+    if (req.body.threeMonthGoalLockIn && !currentUser.threeMonthGoalLockIn) {
+      incThreeMonthLockIn = 1;
+    }
+
+    // Build set dynamically — only include fields present in req.body
+    const settableFields = [
+      'firstName', 'lastName', 'purpose',
+      'threeMonthGoal', 'threeMonthGoalStatus',
+      'weeklyGoal', 'weeklyGoalStatus',
+      'weeklyGoalLockIn', 'threeMonthGoalLockIn', 
+      'streakGoal', 'currentStreak', 'profileImage', 'badges'
+    ];
+    
+    const setObj: Record<string, any> = {};
+    for (const key of settableFields) {
+      if (req.body[key] !== undefined) {
+        setObj[key] = req.body[key];
+      }
     }
 
     const updatedUser = await User.findByIdAndUpdate(
       userId,
       {
-        $set: {
-          firstName, lastName, purpose,
-          threeMonthGoal, threeMonthGoalStatus,
-          weeklyGoal, weeklyGoalStatus,
-          streakGoal, currentStreak, profileImage, badges
-        },
+        $set: setObj,
         $inc: {
           weeklyGoalCompletions: incWeekly,
-          threeMonthGoalCompletions: incThreeMonth
+          threeMonthGoalCompletions: incThreeMonth,
+          weeklyGoalLockInCount: incWeeklyLockIn,
+          threeMonthGoalLockInCount: incThreeMonthLockIn,
         }
       },
       { new: true, runValidators: true }

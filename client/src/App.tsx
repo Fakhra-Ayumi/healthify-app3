@@ -4,8 +4,7 @@ import Signup from './pages/Signup';
 import AppShell from './layouts/AppShell';
 import Profile from './pages/Profile';
 import RoutineBuilder from './pages/RoutineBuilder';
-
-const Milestones = () => <div>Milestones</div>;
+import Milestones from './pages/Milestones';
 
 function App() {
   return (

@@ -16,22 +16,23 @@ export const getWorkouts = async (req: AuthRequest, res: Response) => {
     console.log('📥 GET Workouts for User ID:', userId);
     const workouts = await Workout.find({ userId });
     
-    // --- Auto Reset Logic (6-hour rule) ---
+    // --- Auto Reset Logic (Midnight rule) ---
     const now = new Date();
-    const SIX_HOURS_MS = 6 * 60 * 60 * 1000;
+    // const SIX_HOURS_MS = 6 * 60 * 60 * 1000;
     let hasUpdates = false;
 
     for (const workout of workouts) {
       let needsReset = false;
 
-      // Check if lastCompletedDate exists and was more than 6 hours ago
+      // Check if lastCompletedDate exists and if it's a new day
       if (workout.lastCompletedDate) {
         const lastCompleted = new Date(workout.lastCompletedDate);
-        const timeDiff = now.getTime() - lastCompleted.getTime();
+        const lastCompletedDay = new Date(lastCompleted.getFullYear(), lastCompleted.getMonth(), lastCompleted.getDate());
+        const todayDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
         
-        if (timeDiff >= SIX_HOURS_MS) {
+        if (todayDay.getTime() > lastCompletedDay.getTime()) {
           needsReset = true;
-          console.log(`Workout "${workout.title}" completed >6h ago. Resetting.`);
+          console.log(`Workout "${workout.title}" completed on previous day. Resetting.`);
         }
       }
 

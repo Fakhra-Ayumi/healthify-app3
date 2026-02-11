@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Box, Paper, Typography, IconButton, Select, MenuItem, TextField, Tooltip } from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -43,6 +43,7 @@ const ActivityItem: React.FC<ActivityItemProps> = ({ activity, onUpdate, onDelet
   const handleSuggestionValueChange = (setIndex: number, valStr: string) => {
     const newSets = [...activity.sets];
     const val = parseFloat(valStr);
+    if (val === 0) return;
     newSets[setIndex] = { 
        ...newSets[setIndex], 
        nextSuggestedValue: isNaN(val) ? null : val 
@@ -129,7 +130,7 @@ const ActivityItem: React.FC<ActivityItemProps> = ({ activity, onUpdate, onDelet
             {activity.name}
           </Typography>
 
-          {/* Display Sets in horizontal flexible row */}
+          {/* Display sets in horizontal flexible row */}
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
             {activity.sets.map((set, index) => (
               <Box
@@ -174,7 +175,7 @@ const ActivityItem: React.FC<ActivityItemProps> = ({ activity, onUpdate, onDelet
                        </Tooltip>
                     )}
 
-                    {/* Suggestion Input (only if not readOnly and not suggestionApplied) */}
+                    {/* Suggestion input (only if not readOnly and not suggestionApplied) */}
                     {!readOnly && !set.suggestionApplied && (
                        <Box sx={{ display: 'flex', alignItems: 'center', ml: 1 }}>
                           <Typography variant="caption" sx={{ mr: 0.5, color: 'text.secondary', display: {xs: 'none', sm: 'block'} }}>

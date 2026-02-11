@@ -22,13 +22,17 @@ export interface UserProfile {
   weeklyGoal: string;
   weeklyGoalStatus: 'not_started' | 'in_progress' | 'completed';
   weeklyGoalCompletions: number;
+  weeklyGoalLockIn?: Date | null;
+  threeMonthGoalLockIn?: Date | null;
+  weeklyGoalLockInCount: number;
+  threeMonthGoalLockInCount: number;
   commitmentStartDate?: string;
   currentStreak: number;
   streakGoal: number;
   streakCompletions: number;
   lastActiveDate?: string | null;
   profileImage?: string;
-  badges: string[]; // Array of Badge Names
+  badges: string[];
 }
 
 export const fetchBadges = async (): Promise<Badge[]> => {

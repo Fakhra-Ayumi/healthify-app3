@@ -13,6 +13,10 @@ export interface IUser extends Document {
   weeklyGoal: string;
   weeklyGoalStatus: 'not_started' | 'in_progress' | 'completed';
   weeklyGoalCompletions: number;
+  weeklyGoalLockIn?: Date | null;
+  threeMonthGoalLockIn?: Date | null;
+  weeklyGoalLockInCount: number;
+  threeMonthGoalLockInCount: number;
   commitmentStartDate: Date;
   commitmentEndDate: Date;
   currentStreak: number;
@@ -40,6 +44,11 @@ const UserSchema = new Schema<IUser>({
   weeklyGoal: { type: String, default: "" },
   weeklyGoalStatus: { type: String, enum: ['not_started', 'in_progress', 'completed'], default: 'not_started' },
   weeklyGoalCompletions: { type: Number, default: 0 },
+
+  weeklyGoalLockIn: { type: Date, default: null },
+  threeMonthGoalLockIn: { type: Date, default: null },
+  weeklyGoalLockInCount: { type: Number, default: 0 },
+  threeMonthGoalLockInCount: { type: Number, default: 0 },
 
   commitmentStartDate: { type: Date, default: Date.now },
   currentStreak: { type: Number, default: 0 },

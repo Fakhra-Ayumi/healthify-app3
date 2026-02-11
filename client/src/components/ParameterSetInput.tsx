@@ -53,7 +53,7 @@ const ParameterSetInput: React.FC<ParameterSetInputProps> = ({
 
   const handleSave = () => {
     const numValue = parseFloat(value);
-    if (parameter && !isNaN(numValue) && unit) {
+    if (parameter && !isNaN(numValue) && numValue > 0 && unit) {
       onSave({
         parameter,
         value: numValue,

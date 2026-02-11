@@ -1,8 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
-  Box, Typography, Paper, Avatar, TextField, CircularProgress, Tooltip, Select, MenuItem, IconButton 
+  Box, Typography, Paper, Avatar, TextField, CircularProgress, Tooltip, Select, MenuItem, 
+  IconButton, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle 
 } from '@mui/material';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
+import CloseIcon from '@mui/icons-material/Close';
 import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
 import DirectionsRunIcon from '@mui/icons-material/DirectionsRun';
 import DirectionsBikeIcon from '@mui/icons-material/DirectionsBike';
@@ -12,6 +15,8 @@ import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import { fetchUserProfile, updateUserProfile, fetchBadges, type UserProfile, type Badge } from '../services/userService';
 
 const Profile = () => {
+  const navigate = useNavigate();
+  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<UserProfile | null>(null);
   const [availableBadges, setAvailableBadges] = useState<Badge[]>([]);
@@ -27,6 +32,15 @@ const Profile = () => {
 
   const [isEditingName, setIsEditingName] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [open, setOpen] = useState(false);
+  const [goalToLock, setGoalToLock] = useState<'weekly' | 'threeMonth' | null>(null);
+  const [newBadge, setNewBadge] = useState<Badge | null>(null);
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    localStorage.removeItem('user');
+    navigate('/login');
+  };
 
   useEffect(() => {
     loadProfile();
@@ -39,6 +53,32 @@ const Profile = () => {
         fetchUserProfile(),
         fetchBadges()
       ]);
+      
+      // Check for new badges
+      if (user && userData.badges.length > user.badges.length) {
+        const newlyEarnedBadgeName = userData.badges[userData.badges.length - 1];
+        const badgeInfo = badgesData.find(b => b.name === newlyEarnedBadgeName);
+        if (badgeInfo) {
+          setNewBadge(badgeInfo);
+        }
+      }
+
+      // Reset goals if time has passed
+      if (userData.weeklyGoalLockIn) {
+        const lockInDate = new Date(userData.weeklyGoalLockIn);
+        const oneWeek = 7 * 24 * 60 * 60 * 1000;
+        if (new Date().getTime() - lockInDate.getTime() > oneWeek) {
+          userData.weeklyGoalLockIn = null;
+        }
+      }
+      if (userData.threeMonthGoalLockIn) {
+        const lockInDate = new Date(userData.threeMonthGoalLockIn);
+        const threeMonths = 3 * 30 * 24 * 60 * 60 * 1000;
+        if (new Date().getTime() - lockInDate.getTime() > threeMonths) {
+          userData.threeMonthGoalLockIn = null;
+        }
+      }
+
       setUser(userData);
       setAvailableBadges(badgesData);
       setFormData({
@@ -53,6 +93,30 @@ const Profile = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleLockInClick = (goalType: 'weekly' | 'threeMonth') => {
+    setGoalToLock(goalType);
+    setOpen(true);
+  };
+
+  const handleConfirmLockIn = async () => {
+    if (!goalToLock) return;
+
+    const field = goalToLock === 'weekly' ? 'weeklyGoalLockIn' : 'threeMonthGoalLockIn';
+    try {
+      const updated = await updateUserProfile({ [field]: new Date() });
+      setUser(updated);
+    } catch (err) {
+      console.error('Failed to lock in goal', err);
+    }
+    setOpen(false);
+    setGoalToLock(null);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+    setGoalToLock(null);
   };
 
   const handleBlur = async (field: keyof typeof formData) => {
@@ -114,7 +178,7 @@ const Profile = () => {
 
   const getBadgeIcon = (badge: Badge) => {
     // Determine color based on tier
-    let color = '#1a237e'; // default blue-ish
+    let color = '#cd8532'; // default blue-ish
     if (badge.tier === 'bronze') color = '#cd8532';
     if (badge.tier === 'silver') color = '#c0c0c0';
     if (badge.tier === 'gold') color = '#eed12b';
@@ -194,19 +258,24 @@ const Profile = () => {
   return (
     <Box sx={{ pb: 4, width: '100%', maxWidth: 'md', mx: 'auto' }}>
       
-      {/* Title */}
-      <Typography 
-        variant="h4" 
-        align="center" 
-          sx={{ 
-          color: '#000', 
-          fontWeight: 'bold', 
-          fontFamily: 'inherit',
-          mb: 2, 
-          mt: 1 
-        }}
-      >
-        {user?.firstName ? `${user.firstName}'s` : 'HELTHIFY'} Profile
+      {/* Logout Button */}
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1 }}>
+        <Button 
+          variant="outlined" 
+          size="small" 
+          onClick={() => setLogoutDialogOpen(true)}
+          sx={{ color: '#000', borderColor: 'rgba(0,0,0,0.23)' }}
+        >
+          Logout
+        </Button>
+      </Box>
+
+      {/* Header */}
+      <Typography variant="h6" sx={{ textAlign: 'center', color: 'grey', fontWeight: 'bold' }}>
+        Healthify
+      </Typography>
+      <Typography variant="h4" align="center" sx={{ color: '#000', fontWeight: 'bold', fontStyle: 'italic', mb: 2 }}>
+        {user?.firstName ? `${user.firstName}'s` : ''} Profile
       </Typography>
 
       {/* Main Card */}
@@ -321,7 +390,7 @@ const Profile = () => {
           </Box>
         </Box>
 
-        {/* 3. Badges System */}
+        {/* Badges System */}
         <Box sx={{ mb: 3 }}>
           <Typography sx={labelSx}>Badges</Typography>
           <Box sx={{ display: 'flex', gap: 2, pb: 1, borderBottom: '2px solid #fff', minHeight: 50 }}>
@@ -371,7 +440,26 @@ const Profile = () => {
               onChange={(e) => setFormData({ ...formData, weeklyGoal: e.target.value })}
               onBlur={() => handleBlur('weeklyGoal')}
               sx={{ ...darkInputSx, mt: 0.5 }}
+              disabled={!!user.weeklyGoalLockIn}
             />
+            {user.weeklyGoalLockIn ? (
+              <Button fullWidth variant="contained" disabled sx={{ mt: 1 }}>
+                Locked in on {new Date(user.weeklyGoalLockIn).toLocaleDateString()}
+              </Button>
+            ) : (
+              <Button 
+                fullWidth 
+                variant="contained" 
+                onClick={() => handleLockInClick('weekly')}
+                sx={{ 
+                  mt: 1, 
+                  bgcolor: '#a34efe', 
+                  '&:hover': { bgcolor: '#e0c6fe' } 
+                }}
+              >
+                Lock in, and start
+              </Button>
+            )}
         </Box>
 
         <Box sx={{ mb: 3 }}>
@@ -398,10 +486,29 @@ const Profile = () => {
               onChange={(e) => setFormData({ ...formData, threeMonthGoal: e.target.value })}
               onBlur={() => handleBlur('threeMonthGoal')}
               sx={{ ...darkInputSx, mt: 0.5 }}
+              disabled={!!user.threeMonthGoalLockIn}
             />
+            {user.threeMonthGoalLockIn ? (
+              <Button fullWidth variant="contained" disabled sx={{ mt: 1 }}>
+                Locked in on {new Date(user.threeMonthGoalLockIn).toLocaleDateString()}
+              </Button>
+            ) : (
+              <Button 
+                fullWidth 
+                variant="contained" 
+                onClick={() => handleLockInClick('threeMonth')}
+                sx={{ 
+                  mt: 1, 
+                  bgcolor: '#a34efe', 
+                  '&:hover': { bgcolor: '#e0c6fe' } 
+                }}
+              >
+                Lock in, and start
+              </Button>
+            )}
         </Box>
 
-        {/* 4. Commitment Challenge Auto-Sync (Render user.currentStreak) */}
+        {/* Commitment Challenge Auto-Sync with user.currentStreak */}
         <Box>
            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
             <Typography sx={labelSx}>20 days Commitment Challenge</Typography>
@@ -440,6 +547,62 @@ const Profile = () => {
         </Box>
 
       </Paper>
+
+      <Dialog open={open} onClose={handleClose}>
+        <DialogTitle>Confirm Goal Lock-in</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to lock in this goal? You won't be able to edit it after locking it in.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose}>Keep Editing</Button>
+          <Button onClick={handleConfirmLockIn} autoFocus>
+            Lock In
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      <Dialog open={logoutDialogOpen} onClose={() => setLogoutDialogOpen(false)}>
+        <DialogTitle>Logout</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Have you marked your menu as complete to update your streak? 
+            Make sure before logging out!
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setLogoutDialogOpen(false)}>Cancel</Button>
+          <Button onClick={handleLogout} color="error" autoFocus>
+            Proceed
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {newBadge && (
+        <Dialog open={!!newBadge} onClose={() => setNewBadge(null)}>
+          <DialogTitle>New Badge Earned!</DialogTitle>
+          <IconButton
+            aria-label="close"
+            onClick={() => setNewBadge(null)}
+            sx={{
+              position: 'absolute',
+              right: 8,
+              top: 8,
+              color: (theme) => theme.palette.grey[500],
+            }}
+          >
+            <CloseIcon />
+          </IconButton>
+          <DialogContent sx={{ textAlign: 'center' }}>
+            <Typography variant="h6">{newBadge.name}</Typography>
+            <Box sx={{ my: 2 }}>
+              {getBadgeIcon(newBadge)}
+            </Box>
+            <DialogContentText>{newBadge.description}</DialogContentText>
+          </DialogContent>
+        </Dialog>
+      )}
     </Box>
   );
 };

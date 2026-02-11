@@ -92,12 +92,12 @@ const RoutineBuilder: React.FC = () => {
   };
 
   return (
-    <Box sx={{ pb: 2 }}>
-      <Typography
-        variant="h5"
-        sx={{ fontWeight: 'bold', mb: 3, textAlign: 'center', color: '#000000' }}
-      >
-        Healthify Routine Builder
+    <Box sx={{ pb: 2, width: '100%', maxWidth: 'md', mx: 'auto' }}>
+      <Typography variant="h6" sx={{ textAlign: 'center', color: 'grey', fontWeight: 'bold' }}>
+        Healthify
+      </Typography>
+      <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 3, textAlign: 'center', fontStyle: 'italic', color: '#000' }}>
+        Routine Builder
       </Typography>
 
       {/* Menu Cards */}

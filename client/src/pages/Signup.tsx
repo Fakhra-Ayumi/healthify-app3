@@ -40,7 +40,7 @@ const Signup = () => {
       <Box sx={{ mt: 8, textAlign: 'center' }}>
         <Typography variant="h4" color="textPrimary" gutterBottom>Healthify</Typography>
         <Typography variant="body1" color="textSecondary" sx={{ mb: 4 }}>
-          Record fast, exercise longer!
+          Fast tracking, focused training!
         </Typography>
 
         <form onSubmit={handleSubmit}>
