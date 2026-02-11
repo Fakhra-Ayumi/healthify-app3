@@ -577,7 +577,7 @@ const Profile = () => {
         <DialogContent>
           <DialogContentText sx={{ color: '#fff' }}>
             Have you marked your menu as complete to update your streak? 
-            Make sure before logging out!
+            Make sure to do so before logging out!
           </DialogContentText>
         </DialogContent>
         <DialogActions>
