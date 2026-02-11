@@ -20,6 +20,20 @@ interface ActivityItemProps {
 const ActivityItem: React.FC<ActivityItemProps> = ({ activity, onUpdate, onDelete, readOnly = false }) => {
   const [isAddingSet, setIsAddingSet] = useState(activity.sets.length === 0);
   const [editingSetIndex, setEditingSetIndex] = useState<number | null>(null);
+  const [isEditingName, setIsEditingName] = useState(false);
+  const [editedName, setEditedName] = useState(activity.name);
+
+  /* Save activity name */
+  const handleNameSave = () => {
+    const trimmed = editedName.trim();
+    if (!trimmed) {
+      setEditedName(activity.name);
+      setIsEditingName(false);
+      return;
+    }
+    onUpdate({ ...activity, name: trimmed });
+    setIsEditingName(false);
+  };
 
   /* Add a new set/parameter to this activity */
   const handleAddSet = (newSet: WorkoutSet) => {
@@ -126,9 +140,32 @@ const ActivityItem: React.FC<ActivityItemProps> = ({ activity, onUpdate, onDelet
       <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
         {/* Activity Name */}
         <Box sx={{ flex: 1 }}>
-          <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1.5, fontSize: '1.15rem' }}>
-            {activity.name}
-          </Typography>
+          {isEditingName && !readOnly ? (
+            <TextField
+              size="small"
+              value={editedName}
+              placeholder="Activity name"
+              onChange={(e) => setEditedName(e.target.value)}
+              onBlur={handleNameSave}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') handleNameSave();
+                if (e.key === 'Escape') {
+                  setEditedName(activity.name);
+                  setIsEditingName(false);
+                }
+              }}
+              autoFocus
+              sx={{ mb: 1.5 }}
+            />
+          ) : (
+            <Typography
+              variant="h6"
+              sx={{ fontWeight: 'bold', mb: 1.5, fontSize: '1.15rem', cursor: readOnly ? 'default' : 'pointer' }}
+              onDoubleClick={() => { if (!readOnly) setIsEditingName(true); }}
+            >
+              {activity.name}
+            </Typography>
+          )}
 
           {/* Display sets in horizontal flexible row */}
           <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>

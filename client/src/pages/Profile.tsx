@@ -249,7 +249,7 @@ const Profile = () => {
       case 'in_progress':
         return '#fff9c4';
       case 'completed':
-        return '#c8e6c9';
+        return '#c2e4ff';
       default:
         return '#ffffff';
     }
@@ -257,18 +257,6 @@ const Profile = () => {
 
   return (
     <Box sx={{ pb: 4, width: '100%', maxWidth: 'md', mx: 'auto' }}>
-      
-      {/* Logout Button */}
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1 }}>
-        <Button 
-          variant="outlined" 
-          size="small" 
-          onClick={() => setLogoutDialogOpen(true)}
-          sx={{ color: '#000', borderColor: 'rgba(0,0,0,0.23)' }}
-        >
-          Logout
-        </Button>
-      </Box>
 
       {/* Header */}
       <Typography variant="h6" sx={{ textAlign: 'center', color: 'grey', fontWeight: 'bold' }}>
@@ -287,9 +275,30 @@ const Profile = () => {
           p: { xs: 2, md: 4 },
           mx: { xs: 2, md: 0 },
           width: '100%',
-          boxSizing: 'border-box'
+          boxSizing: 'border-box',
+          position: 'relative'
         }}
       >
+        {/* Logout Button */}
+        <Button 
+          variant="outlined" 
+          size="small" 
+          onClick={() => setLogoutDialogOpen(true)}
+          sx={{ 
+            position: 'absolute', 
+            top: 16, 
+            right: 16, 
+            color: '#000', 
+            backgroundColor: '#a34efe',
+            borderColor: 'rgba(0, 0, 0, 0.78)',
+            fontSize: '0.9rem',
+            textTransform: 'none',
+            zIndex: 1
+          }}
+        >
+          Logout
+        </Button>
+
         {/* Header: Avatar + Fields */}
         <Box sx={{ display: 'flex', gap: 2, mb: 3, flexDirection: { xs: 'column', sm: 'row' } }}>
           {/* Avatar */}
@@ -548,40 +557,40 @@ const Profile = () => {
 
       </Paper>
 
-      <Dialog open={open} onClose={handleClose}>
-        <DialogTitle>Confirm Goal Lock-in</DialogTitle>
+      <Dialog open={open} onClose={handleClose} PaperProps={{ sx: { bgcolor: '#a34efe', border: '2px solid #000', borderRadius: 3 } }}>
+        <DialogTitle sx={{ color: '#fff' }}>Confirm Goal Lock-in</DialogTitle>
         <DialogContent>
-          <DialogContentText>
+          <DialogContentText sx={{ color: '#fff' }}>
             Are you sure you want to lock in this goal? You won't be able to edit it after locking it in.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Keep Editing</Button>
-          <Button onClick={handleConfirmLockIn} autoFocus>
+          <Button onClick={handleClose} sx={{ color: '#fff' }}>Keep Editing</Button>
+          <Button onClick={handleConfirmLockIn} autoFocus sx={{ color: '#fff' }}>
             Lock In
           </Button>
         </DialogActions>
       </Dialog>
 
-      <Dialog open={logoutDialogOpen} onClose={() => setLogoutDialogOpen(false)}>
-        <DialogTitle>Logout</DialogTitle>
+      <Dialog open={logoutDialogOpen} onClose={() => setLogoutDialogOpen(false)} PaperProps={{ sx: { bgcolor: '#000', border: '2px solid #a34efe', borderRadius: 3 } }}>
+        <DialogTitle sx={{ color: '#fff' }}>Logout</DialogTitle>
         <DialogContent>
-          <DialogContentText>
+          <DialogContentText sx={{ color: '#fff' }}>
             Have you marked your menu as complete to update your streak? 
             Make sure before logging out!
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setLogoutDialogOpen(false)}>Cancel</Button>
-          <Button onClick={handleLogout} color="error" autoFocus>
+          <Button onClick={() => setLogoutDialogOpen(false)} sx={{ color: '#fff' }}>Cancel</Button>
+          <Button onClick={handleLogout} autoFocus sx={{ color: '#fff' }}>
             Proceed
           </Button>
         </DialogActions>
       </Dialog>
 
       {newBadge && (
-        <Dialog open={!!newBadge} onClose={() => setNewBadge(null)}>
-          <DialogTitle>New Badge Earned!</DialogTitle>
+        <Dialog open={!!newBadge} onClose={() => setNewBadge(null)} PaperProps={{ sx: { bgcolor: '#a34efe', border: '2px solid #000', borderRadius: 3 } }}>
+          <DialogTitle sx={{ color: '#fff' }}>New Badge Earned!</DialogTitle>
           <IconButton
             aria-label="close"
             onClick={() => setNewBadge(null)}
@@ -589,17 +598,17 @@ const Profile = () => {
               position: 'absolute',
               right: 8,
               top: 8,
-              color: (theme) => theme.palette.grey[500],
+              color: '#fff',
             }}
           >
             <CloseIcon />
           </IconButton>
           <DialogContent sx={{ textAlign: 'center' }}>
-            <Typography variant="h6">{newBadge.name}</Typography>
+            <Typography variant="h6" sx={{ color: '#fff' }}>{newBadge.name}</Typography>
             <Box sx={{ my: 2 }}>
               {getBadgeIcon(newBadge)}
             </Box>
-            <DialogContentText>{newBadge.description}</DialogContentText>
+            <DialogContentText sx={{ color: '#fff' }}>{newBadge.description}</DialogContentText>
           </DialogContent>
         </Dialog>
       )}

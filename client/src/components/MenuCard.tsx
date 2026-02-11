@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Box, Paper, Typography, TextField, IconButton, Collapse, Button, Chip } from '@mui/material';
+import { Box, Paper, Typography, TextField, IconButton, Collapse, Button, Chip, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -27,6 +27,7 @@ const MenuCard: React.FC<MenuCardProps> = ({
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [editedTitle, setEditedTitle] = useState(workout.title || '');
   const [isAddingActivity, setIsAddingActivity] = useState(false);
+  const [doneDialogOpen, setDoneDialogOpen] = useState(false);
 
   // Determine if done today
   const isDoneToday = Boolean(workout.lastCompletedDate && 
@@ -139,7 +140,7 @@ const MenuCard: React.FC<MenuCardProps> = ({
         {(isExpanded || isDoneToday) && (
             isDoneToday ? (
              <Chip 
-               label="Completed Today" 
+               label="Completed" 
                color="success" 
                size="small" 
                variant="filled"
@@ -151,7 +152,7 @@ const MenuCard: React.FC<MenuCardProps> = ({
                 size="small"
                 onClick={(e) => {
                   e.stopPropagation();
-                  onDoneForToday();
+                  setDoneDialogOpen(true);
                 }}
                 sx={{ 
                   mr: 2, 
@@ -234,6 +235,21 @@ const MenuCard: React.FC<MenuCardProps> = ({
           )}
         </Box>
       </Collapse>
+      {/* Done for Today confirmation dialog */}
+      <Dialog open={doneDialogOpen} onClose={() => setDoneDialogOpen(false)} PaperProps={{ sx: { bgcolor: '#a34efe', border: '2px solid #000', borderRadius: 3 } }}>
+        <DialogTitle sx={{ color: '#fff' }}>Confirm Completion</DialogTitle>
+        <DialogContent>
+          <DialogContentText sx={{ color: '#fff' }}>
+            After marking Done, you will not be able to edit the status of each activity. Are you sure you have recorded everything?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDoneDialogOpen(false)} sx={{ color: '#fff' }}>Cancel</Button>
+          <Button onClick={() => { setDoneDialogOpen(false); onDoneForToday(); }} autoFocus sx={{ color: '#fff' }}>
+            Yes, Done
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Paper>
   );
 };
