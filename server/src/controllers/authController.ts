@@ -53,7 +53,8 @@ export const updateProfile = async (req: AuthRequest, res: Response) => {
       'threeMonthGoal', 'threeMonthGoalStatus',
       'weeklyGoal', 'weeklyGoalStatus',
       'weeklyGoalLockIn', 'threeMonthGoalLockIn', 
-      'streakGoal', 'currentStreak', 'profileImage', 'badges'
+      'streakGoal', 'currentStreak', 'profileImage', 'badges',
+      'streakDates', 'commitmentStartDate'
     ];
     
     const setObj: Record<string, any> = {};

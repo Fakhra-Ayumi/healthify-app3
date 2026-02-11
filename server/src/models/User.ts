@@ -20,6 +20,7 @@ export interface IUser extends Document {
   commitmentStartDate: Date;
   commitmentEndDate: Date;
   currentStreak: number;
+  streakDates: Date[];
   streakGoal: number; 
   streakCompletions: number;
   lastActiveDate?: Date | null;
@@ -52,6 +53,7 @@ const UserSchema = new Schema<IUser>({
 
   commitmentStartDate: { type: Date, default: Date.now },
   currentStreak: { type: Number, default: 0 },
+  streakDates: [{ type: Date, default: [] }],
   streakGoal: { type: Number, default: 20 },
   streakCompletions: { type: Number, default: 0 },
   lastActiveDate: { type: Date, default: null },

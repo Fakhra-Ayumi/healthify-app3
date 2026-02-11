@@ -1,6 +1,7 @@
 import { Response } from 'express';
 import { Workout } from '../models/Workout';
 import { User } from '../models/User';
+import { WorkoutLog } from '../models/WorkoutLog';
 import { evaluateBadges } from '../services/badgeEvaluator';
 import { AuthRequest } from '../middleware/auth';
 
@@ -156,6 +157,38 @@ export const updateWorkout = async (req: AuthRequest, res: Response) => {
         const todayStr = new Date().toDateString();
         const completedStr = new Date(lastCompletedDate).toDateString();
         if (todayStr === completedStr) {
+           // Save workout logs
+            try {
+              const logsToInsert: any[] = [];
+              const timestamp = new Date();
+              
+              if (workout.activities && workout.activities.length > 0) {
+                workout.activities.forEach(activity => {
+                  activity.sets.forEach(set => {
+                    // Only log values that have been entered (completed/partial) and have a valid number
+                    if (set.value > 0 && (set.status === 'completed' || set.status === 'partial')) {
+                      logsToInsert.push({
+                        userId,
+                        date: timestamp,
+                        workoutTitle: workout.title,
+                        activityName: activity.name,
+                        parameter: set.parameter,
+                        value: set.value,
+                        unit: set.unit
+                      });
+                    }
+                  });
+                });
+              }
+
+              if (logsToInsert.length > 0) {
+                 await WorkoutLog.insertMany(logsToInsert);
+                 console.log(`   ✓ Saved ${logsToInsert.length} workout logs history`);
+              }
+            } catch (logErr) {
+              console.error('   ✗ Failed to save workout logs:', logErr);
+            }
+
            // Calls updateStreak only on "Done for Today"
            await updateStreak(userId);
         }
@@ -193,17 +226,55 @@ const updateStreak = async (userId: string) => {
         user.currentStreak += 1;
         user.lastActiveDate = todayDateOnly;
       } else {
-        // Missed days, reset streak
+        // Missed days, reset current streak count for consecutive tracking
+        // (But we still record the date in streakDates for the 20-day grid)
         user.currentStreak = 1;
         user.lastActiveDate = todayDateOnly;
       }
     }
 
-    // Handle 20-day challenge completion
-    if (user.currentStreak >= (user.streakGoal || 20)) {
-      user.streakCompletions += 1;
-      user.currentStreak = 0; 
-      user.lastActiveDate = null;
+    // Add today to streakDates if not present
+    const dateExists = user.streakDates?.some(
+      (d) => new Date(d).toDateString() === todayDateOnly.toDateString()
+    );
+    if (!dateExists) {
+      user.streakDates.push(todayDateOnly);
+    }
+
+    // Handle 20-day challenge completion based on time window
+    const startDate = new Date(user.commitmentStartDate);
+    const startDayOnly = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+    
+    // Calculate days passed since commitment start (inclusive)
+    const msSinceStart = todayDateOnly.getTime() - startDayOnly.getTime();
+    const daysSinceStart = Math.floor(msSinceStart / (1000 * 60 * 60 * 24)) + 1;
+
+    // Check if we hit the 20 day mark
+    if (daysSinceStart >= (user.streakGoal || 20)) {
+       // Evaluate if they passed: check if they have enough logged days?
+       // The prompt says: "backend records ... consistent record for 20 days to decide providing a badge"
+       // We can use currentStreak for "consecutive" success 
+       // OR check streakDates.length.
+       // Usually "Streak" badge implies consecutive. 
+       // "Commitment" might just mean staying active.
+       // Current implementation uses `currentStreak` >= 20.
+       // Let's stick to the existing logic: if they have a 20-day streak now, they win.
+       // If they just finished the 20-day period but streak < 20, they fail the "perfect streak" but maybe we should reset.
+       
+       // Actually, the prompt says: "frontend notes recorded dates... backend records whether there are consistent record"
+       // Let's rely on the BadgeEvaluator for badges. 
+       // Here we just manage the cycle reset.
+
+       // If user achieved the streak goal count, we award completion.
+       if (user.currentStreak >= (user.streakGoal || 20)) {
+         user.streakCompletions += 1;
+       }
+
+       // Reset for next 20 day cycle
+       user.currentStreak = 0;
+       user.streakDates = [];
+       user.lastActiveDate = null;
+       user.commitmentStartDate = new Date(); // Start new cycle now
     }
 
     await user.save();

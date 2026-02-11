@@ -28,6 +28,7 @@ export interface UserProfile {
   threeMonthGoalLockInCount: number;
   commitmentStartDate?: string;
   currentStreak: number;
+  streakDates?: string[]; // Array of ISO date strings
   streakGoal: number;
   streakCompletions: number;
   lastActiveDate?: string | null;

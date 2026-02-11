@@ -9,6 +9,20 @@ const getAuthHeader = () => {
   return { headers: { Authorization: `Bearer ${token}` } };
 };
 
+export interface WorkoutLogEntry {
+  date: string;
+  workoutTitle: string;
+  activityName: string;
+  parameter: string;
+  value: number;
+  unit: string;
+}
+
+export const fetchWorkoutHistory = async (days: number = 14): Promise<WorkoutLogEntry[]> => {
+  const response = await axios.get(`${API_URL}/history?days=${days}`, getAuthHeader());
+  return response.data;
+};
+
 export const fetchWorkouts = async (): Promise<Workout[]> => {
   const response = await axios.get(API_URL, getAuthHeader());
   return response.data;

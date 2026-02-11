@@ -533,7 +533,20 @@ const Profile = () => {
             }}
           >
             {Array.from({ length: 20 }).map((_, index) => {
-              const isFilled = index < (user.currentStreak || 0);
+              // Calculate the date for this circle
+              const startDate = user.commitmentStartDate ? new Date(user.commitmentStartDate) : new Date();
+              const dateForCircle = new Date(startDate);
+              dateForCircle.setDate(startDate.getDate() + index);
+              
+              const dayNumber = dateForCircle.getDate();
+              
+              const dateStr = dateForCircle.toDateString();
+              const isRecorded = user.streakDates?.some((d: string) => new Date(d).toDateString() === dateStr);
+              
+              const today = new Date();
+              today.setHours(0,0,0,0);
+              const isFuture = dateForCircle.getTime() > today.getTime();
+
               return (
                 <Box
                   key={index}
@@ -541,15 +554,20 @@ const Profile = () => {
                     width: 32,
                     height: 32,
                     borderRadius: '50%',
-                    bgcolor: isFilled ? '#a34efe' : 'transparent',
+                    bgcolor: isRecorded ? '#a34efe' : 'transparent',
                     border: '3px solid',
-                    borderColor: '#a34efe',
+                    borderColor: isFuture ? '#eee' : '#a34efe',
+                    color: isRecorded ? '#fff' : (isFuture ? '#ccc' : '#000'),
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    boxShadow: isFilled ? 'inset 0 0 0 2px #e0c6fe' : 'none',
+                    fontSize: '0.75rem',
+                    fontWeight: 'bold',
+                    boxShadow: isRecorded ? 'inset 0 0 0 2px #e0c6fe' : 'none',
                   }}
-                />
+                >
+                  {dayNumber}
+                </Box>
               );
             })}
           </Box>
