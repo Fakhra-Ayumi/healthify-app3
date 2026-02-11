@@ -1,11 +1,12 @@
-import { useState } from 'react';
-import { Box, Paper, Typography, IconButton, Select, MenuItem } from '@mui/material';
+import { useState, useEffect } from 'react';
+import { Box, Paper, Typography, IconButton, Select, MenuItem, TextField, Tooltip } from '@mui/material';
 import type { SelectChangeEvent } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CheckIcon from '@mui/icons-material/Check';
 import HourglassTopIcon from '@mui/icons-material/HourglassTop';
 import CloseIcon from '@mui/icons-material/Close';
 import EditIcon from '@mui/icons-material/Edit';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import type { Activity, Set as WorkoutSet } from '../types/workout';
 import ParameterSetInput from './ParameterSetInput';
 
@@ -13,9 +14,10 @@ interface ActivityItemProps {
   activity: Activity;
   onUpdate: (updated: Activity) => void;
   onDelete: () => void;
+  readOnly?: boolean;
 }
 
-const ActivityItem: React.FC<ActivityItemProps> = ({ activity, onUpdate, onDelete }) => {
+const ActivityItem: React.FC<ActivityItemProps> = ({ activity, onUpdate, onDelete, readOnly = false }) => {
   const [isAddingSet, setIsAddingSet] = useState(activity.sets.length === 0);
   const [editingSetIndex, setEditingSetIndex] = useState<number | null>(null);
 
@@ -28,13 +30,55 @@ const ActivityItem: React.FC<ActivityItemProps> = ({ activity, onUpdate, onDelet
     setIsAddingSet(false);
   };
 
-  /* Update an existing set */
+
+  /* Update an existing set (including suggestion value change) */
   const handleUpdateSet = (setIndex: number, updated: WorkoutSet) => {
     const newSets = [...activity.sets];
     newSets[setIndex] = updated;
     onUpdate({ ...activity, sets: newSets });
     // close edit mode for that set
     setEditingSetIndex(null);
+  };
+  
+  const handleSuggestionValueChange = (setIndex: number, valStr: string) => {
+    const newSets = [...activity.sets];
+    const val = parseFloat(valStr);
+    newSets[setIndex] = { 
+       ...newSets[setIndex], 
+       nextSuggestedValue: isNaN(val) ? null : val 
+    };
+    onUpdate({ ...activity, sets: newSets });
+  };
+
+  const handleAcceptSuggestion = (setIndex: number) => {
+    const newSets = [...activity.sets];
+    const s = newSets[setIndex];
+    newSets[setIndex] = {
+      ...s,
+      suggestionApplied: false,
+      previousValue: null
+    };
+    onUpdate({ ...activity, sets: newSets });
+  };
+
+  const handleRejectSuggestion = (setIndex: number) => {
+    const newSets = [...activity.sets];
+    const s = newSets[setIndex];
+    if (s.previousValue !== null && s.previousValue !== undefined) {
+      newSets[setIndex] = {
+        ...s,
+        value: s.previousValue,
+        suggestionApplied: false,
+        previousValue: null
+      };
+    } else {
+       // just clear flags if no previous val
+       newSets[setIndex] = {
+        ...s,
+        suggestionApplied: false
+      };
+    }
+    onUpdate({ ...activity, sets: newSets });
   };
 
   /* Delete a set */
@@ -93,7 +137,8 @@ const ActivityItem: React.FC<ActivityItemProps> = ({ activity, onUpdate, onDelet
                 sx={{
                   display: 'flex',
                   alignItems: 'center',
-                  bgcolor: 'action.hover', 
+                  bgcolor: set.suggestionApplied ? '#fff9c4' : 'action.hover', // Highlight if suggestion applied
+                  border: set.suggestionApplied ? '1px solid #fbc02d' : 'none',
                   borderRadius: 1,
                   px: 1.5,
                   py: 0.75,
@@ -119,23 +164,63 @@ const ActivityItem: React.FC<ActivityItemProps> = ({ activity, onUpdate, onDelet
                     </Typography>
 
                     <Typography variant="body1">
-                      {set.value} {set.unit}
+                       {set.value} {set.unit}
                     </Typography>
+                    
+                    {/* Show indicator if value changed via suggestion */}
+                    {set.suggestionApplied && set.previousValue !== null && (
+                       <Tooltip title={`Previous: ${set.previousValue}`}>
+                          <ArrowForwardIcon color="primary" sx={{ fontSize: 16 }} />
+                       </Tooltip>
+                    )}
+
+                    {/* Suggestion Input (only if not readOnly and not suggestionApplied) */}
+                    {!readOnly && !set.suggestionApplied && (
+                       <Box sx={{ display: 'flex', alignItems: 'center', ml: 1 }}>
+                          <Typography variant="caption" sx={{ mr: 0.5, color: 'text.secondary', display: {xs: 'none', sm: 'block'} }}>
+                            Next:
+                          </Typography>
+                          <TextField 
+                             variant="standard" 
+                             type="number" 
+                             placeholder="?"
+                             value={set.nextSuggestedValue ?? ''}
+                             onChange={(e) => handleSuggestionValueChange(index, e.target.value)}
+                             sx={{ width: 40, '& input': { py: 0, fontSize: '0.85rem', textAlign: 'center' } }}
+                          />
+                       </Box>
+                    )}
 
                     <Box sx={{ display: 'flex', ml: 1 }}>
-                      <IconButton size="small" onClick={() => setEditingSetIndex(index)}>
-                        <EditIcon sx={{ fontSize: 18 }} />
-                      </IconButton>
-                      <IconButton
-                        size="small"
-                        onClick={() => handleDeleteSet(index)}
-                        sx={{ 
-                          color: 'action.active', 
-                          '&:hover': { color: '#ef5350', bgcolor: 'rgba(239, 83, 80, 0.08)' } 
-                        }}
-                      >
-                        <DeleteIcon sx={{ fontSize: 18 }} />
-                      </IconButton>
+                      {/* If suggestion applied, show Check/Cross logic instead of Edit/Delete */}
+                      {set.suggestionApplied ? (
+                        <>
+                           <IconButton size="small" onClick={() => handleAcceptSuggestion(index)} sx={{ color: 'success.main'}}>
+                              <CheckIcon sx={{ fontSize: 18 }} />
+                           </IconButton>
+                           <IconButton size="small" onClick={() => handleRejectSuggestion(index)} sx={{ color: 'error.main'}}>
+                              <CloseIcon sx={{ fontSize: 18 }} />
+                           </IconButton>
+                        </>
+                      ) : (
+                         !readOnly && (
+                           <>
+                              <IconButton size="small" onClick={() => setEditingSetIndex(index)}>
+                                <EditIcon sx={{ fontSize: 18 }} />
+                              </IconButton>
+                              <IconButton
+                                size="small"
+                                onClick={() => handleDeleteSet(index)}
+                                sx={{ 
+                                  color: 'action.active', 
+                                  '&:hover': { color: '#ef5350', bgcolor: 'rgba(239, 83, 80, 0.08)' } 
+                                }}
+                              >
+                                <DeleteIcon sx={{ fontSize: 18 }} />
+                              </IconButton>
+                           </>
+                         )
+                      )}
                     </Box>
                   </>
                 )}
@@ -154,7 +239,7 @@ const ActivityItem: React.FC<ActivityItemProps> = ({ activity, onUpdate, onDelet
           )}
 
           {/* Add More Parameters Button */}
-          {!isAddingSet && (
+          {!isAddingSet && !readOnly && (
             <Typography
               variant="body1"
               color="text.secondary"
@@ -175,6 +260,7 @@ const ActivityItem: React.FC<ActivityItemProps> = ({ activity, onUpdate, onDelet
         {/* Action Icons */}
         <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 0.5, ml: 2 }}>
           <Select
+            disabled={readOnly}
             value={activity.sets[0]?.status || 'none'}
             onChange={handleStatusChange}
             variant="standard"
@@ -211,16 +297,18 @@ const ActivityItem: React.FC<ActivityItemProps> = ({ activity, onUpdate, onDelet
               </Box>
             </MenuItem>
           </Select>
-          <IconButton 
+          {!readOnly && (
+           <IconButton 
             size="small" 
             onClick={onDelete} 
             sx={{ 
               color: 'action.active', 
               '&:hover': { color: '#ef5350', bgcolor: 'rgba(239, 83, 80, 0.08)' } 
             }}
-          >
+           >
             <DeleteIcon sx={{ fontSize: 20 }} />
-          </IconButton>
+           </IconButton>
+          )}
         </Box>
       </Box>
     </Paper>

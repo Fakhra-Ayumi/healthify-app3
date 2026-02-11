@@ -19,6 +19,9 @@ export interface Set {
   value: number;
   unit: string;
   status: SetStatus;
+  nextSuggestedValue?: number | null;
+  previousValue?: number | null;
+  suggestionApplied?: boolean;
 }
 
 export interface Activity {
@@ -32,5 +35,7 @@ export interface Workout {
   userId?: string;
   day: string;
   title: string;
+  lastCompletedDate?: string;
+  lastResetDate?: string;
   activities: Activity[];
 }

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Box, Paper, Typography, TextField, IconButton, Collapse } from '@mui/material';
+import { Box, Paper, Typography, TextField, IconButton, Collapse, Button, Chip } from '@mui/material';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -13,6 +13,7 @@ interface MenuCardProps {
   onToggleExpand: () => void;
   onUpdate: (updated: Workout) => void;
   onDelete: () => void;
+  onDoneForToday: () => void;
 }
 
 const MenuCard: React.FC<MenuCardProps> = ({
@@ -21,17 +22,23 @@ const MenuCard: React.FC<MenuCardProps> = ({
   onToggleExpand,
   onUpdate,
   onDelete,
+  onDoneForToday
 }) => {
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [editedTitle, setEditedTitle] = useState(workout.title || '');
   const [isAddingActivity, setIsAddingActivity] = useState(false);
+
+  // Determine if done today
+  const isDoneToday = Boolean(workout.lastCompletedDate && 
+    new Date(workout.lastCompletedDate).toDateString() === new Date().toDateString()
+  );
 
   /* Update workout title */
   const handleTitleChange = () => {
     const trimmedTitle = editedTitle.trim();
     if (!trimmedTitle) {
       // Revert to original title if empty
-      setEditedTitle(workout.title || 'New Routine');
+      setEditedTitle(workout.title || 'Menu Title');
       setIsEditingTitle(false);
       return;
     }
@@ -118,7 +125,7 @@ const MenuCard: React.FC<MenuCardProps> = ({
                 setIsEditingTitle(true);
               }}
             >
-              {workout.title || 'Menu title'}
+              {workout.title || 'Menu Title'}
             </Typography>
           )}
         </Box>
@@ -127,17 +134,55 @@ const MenuCard: React.FC<MenuCardProps> = ({
             {workout.activities.map((a) => a.name).join(', ')}
           </Typography>
         )}
+
+        {/* Done Status / Button */}
+        {(isExpanded || isDoneToday) && (
+            isDoneToday ? (
+             <Chip 
+               label="Completed Today" 
+               color="success" 
+               size="small" 
+               variant="filled"
+               sx={{ mr: 2, fontWeight: 'bold' }} 
+             />
+           ) : ( isExpanded &&
+             <Button 
+                variant="contained" 
+                size="small"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onDoneForToday();
+                }}
+                sx={{ 
+                  mr: 2, 
+                  textTransform: 'none', 
+                  borderRadius: 20,
+                  bgcolor: '#black',
+                  color: 'white',
+                  '&:hover': { bgcolor: '#333' }
+                }}
+             >
+                Done for Today
+             </Button>
+           )
+        )}
+
         <IconButton
           size="small"
           onClick={(e) => {
             e.stopPropagation();
+            if (isDoneToday) {
+               alert("Cannot delete a routine that is completed today.");
+               return;
+            }
             if (window.confirm(`Delete ${workout.title || 'this menu'}?`)) {
               onDelete();
             }
           }}
+          disabled={isDoneToday}
           sx={{ 
-            color: 'action.active', 
-            '&:hover': { color: '#e63939', bgcolor: 'rgba(239, 83, 80, 0.08)' } 
+            color: isDoneToday ? 'action.disabled' : 'action.active', 
+            '&:hover': { color: isDoneToday ? 'inherit' : '#e63939', bgcolor: isDoneToday ? 'transparent' : 'rgba(239, 83, 80, 0.08)' } 
           }}
         >
           <DeleteIcon />
@@ -154,11 +199,12 @@ const MenuCard: React.FC<MenuCardProps> = ({
               activity={activity}
               onUpdate={(updated) => handleUpdateActivity(actIndex, updated)}
               onDelete={() => handleDeleteActivity(actIndex)}
+              readOnly={isDoneToday}
             />
           ))}
 
           {/* Add Activity Button */}
-          {!isAddingActivity ? (
+          {!isDoneToday && !isAddingActivity ? (
             <Paper
               elevation={0}
               sx={{

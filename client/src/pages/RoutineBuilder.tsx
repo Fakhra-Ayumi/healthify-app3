@@ -30,7 +30,8 @@ const RoutineBuilder: React.FC = () => {
     };
 
     // Optimistic update
-    const tempId = `temp-${Date.now()}`;
+    const timestamp = new Date().getTime();
+    const tempId = `temp-${timestamp}`;
     const optimisticWorkout = { ...newWorkout, _id: tempId } as Workout;
     setWorkouts(prev => [...prev, optimisticWorkout]);
     setExpandedMenuId(tempId);
@@ -42,14 +43,14 @@ const RoutineBuilder: React.FC = () => {
       if (savedWorkout._id) setExpandedMenuId(savedWorkout._id);
     } catch (err) {
       console.error('Failed to add workout:', err);
-      // Revert optimistic update
+      // Revert placeholder data
       setWorkouts(prev => prev.filter(w => w._id !== tempId));
       setExpandedMenuId(null);
     }
   };
 
   const handleUpdateWorkout = async (index: number, updated: Workout) => {
-    // Optimistic update
+    // Update the placeholder data
     setWorkouts(prev => {
       const copy = [...prev];
       copy[index] = updated;
@@ -67,7 +68,7 @@ const RoutineBuilder: React.FC = () => {
 
   const handleDeleteWorkout = async (index: number) => {
     const workoutToDelete = workouts[index];
-    // Optimistic update
+    // Update the placeholder data
     setWorkouts(prev => prev.filter((_, i) => i !== index));
 
     try {
@@ -82,6 +83,12 @@ const RoutineBuilder: React.FC = () => {
   const getDayName = (index: number): string => {
     const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
     return days[index % 7];
+  };
+
+  const handleDoneForToday = (index: number) => {
+    const workout = workouts[index];
+    const updated = { ...workout, lastCompletedDate: new Date().toISOString() };
+    handleUpdateWorkout(index, updated);
   };
 
   return (
@@ -105,6 +112,7 @@ const RoutineBuilder: React.FC = () => {
           }}
           onUpdate={(updated) => handleUpdateWorkout(index, updated)}
           onDelete={() => handleDeleteWorkout(index)}
+          onDoneForToday={() => handleDoneForToday(index)}
         />
       ))}
 

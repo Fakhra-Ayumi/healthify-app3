@@ -4,13 +4,18 @@ export interface IWorkout extends Document {
   userId: Types.ObjectId;
   day: string; 
   title: string;
+  lastCompletedDate?: Date;
+  lastResetDate?: Date;
   activities: {
     name: string;
     sets: {
       parameter: 'Weight' | 'Time' | 'Distance' | 'Reps' | 'Sets' | 'Rest' | 'Incline' | 'Speed' | 'Resistance' | 'Cadence' | 'Height';
       value: number;
       unit: string; 
-      status: 'completed' | 'incomplete' | 'partial' | 'none'; // TODO: Use this
+      status: 'completed' | 'incomplete' | 'partial' | 'none';
+      nextSuggestedValue?: number;
+      previousValue?: number;
+      suggestionApplied?: boolean;
     }[];
   }[];
 }
@@ -19,6 +24,8 @@ const WorkoutSchema = new Schema<IWorkout>({
   userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   day: { type: String, required: true },
   title: { type: String, required: true },
+  lastCompletedDate: { type: Date, default: null },
+  lastResetDate: { type: Date, default: null },
   
   activities: [{
     name: { type: String, required: true },
@@ -34,7 +41,10 @@ const WorkoutSchema = new Schema<IWorkout>({
         type: String, 
         enum: ['completed', 'incomplete', 'partial', 'none'], 
         default: 'none' 
-      }
+      },
+      nextSuggestedValue: { type: Number, default: null },
+      previousValue: { type: Number, default: null },
+      suggestionApplied: { type: Boolean, default: false }
     }]
   }]
 }, { timestamps: true });

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Box, TextField, Select, MenuItem, IconButton, FormControl, InputLabel } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
@@ -15,10 +15,6 @@ const ParameterSetInput: React.FC<ParameterSetInputProps> = ({
   onCancel,
   initialSet,
 }) => {
-  const [parameter, setParameter] = useState<ParameterType>(initialSet?.parameter || 'Time');
-  const [value, setValue] = useState<string>(initialSet?.value.toString() || '');
-  const [unit, setUnit] = useState<string>(initialSet?.unit || '');
-
   /* Parameter-to-unit mapping */
   const getUnitsForParameter = (param: ParameterType): string[] => {
     switch (param) {
@@ -49,6 +45,12 @@ const ParameterSetInput: React.FC<ParameterSetInputProps> = ({
     }
   };
 
+  // Initialize state with safe defaults derived from parameter-to-unit mapping
+  const [parameter, setParameter] = useState<ParameterType>(initialSet?.parameter || 'Time');
+  const [value, setValue] = useState<string>(initialSet?.value?.toString() || '');
+  const initialUnits = getUnitsForParameter(initialSet?.parameter || parameter);
+  const [unit, setUnit] = useState<string>(initialSet?.unit || initialUnits[0] || '');
+
   const handleSave = () => {
     const numValue = parseFloat(value);
     if (parameter && !isNaN(numValue) && unit) {
@@ -66,13 +68,6 @@ const ParameterSetInput: React.FC<ParameterSetInputProps> = ({
     const units = getUnitsForParameter(newParam);
     setUnit(units[0] || '');
   };
-
-  useEffect(() => {
-    if (!unit && parameter) {
-      const units = getUnitsForParameter(parameter);
-      setUnit(units[0] || '');
-    }
-  }, [parameter, unit]);
 
   return (
     <Box sx={{ 

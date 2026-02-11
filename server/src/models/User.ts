@@ -8,12 +8,18 @@ export interface IUser extends Document {
   password?: string;
   purpose: string;
   threeMonthGoal: string;
-  monthlyGoal: string;
+  threeMonthGoalStatus: 'not_started' | 'in_progress' | 'completed';
+  threeMonthGoalCompletions: number;
   weeklyGoal: string;
+  weeklyGoalStatus: 'not_started' | 'in_progress' | 'completed';
+  weeklyGoalCompletions: number;
   commitmentStartDate: Date;
   commitmentEndDate: Date;
   currentStreak: number;
   streakGoal: number; 
+  streakCompletions: number;
+  lastActiveDate?: Date | null;
+  profileImage?: string; // Base64 or URL
   badges: string[];
 }
 
@@ -25,15 +31,22 @@ const UserSchema = new Schema<IUser>({
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
   
-  // Goals and Memos
   purpose: { type: String, default: "" },
+  
   threeMonthGoal: { type: String, default: "" },
-  monthlyGoal: { type: String, default: "" },
+  threeMonthGoalStatus: { type: String, enum: ['not_started', 'in_progress', 'completed'], default: 'not_started' },
+  threeMonthGoalCompletions: { type: Number, default: 0 },
+  
   weeklyGoal: { type: String, default: "" },
+  weeklyGoalStatus: { type: String, enum: ['not_started', 'in_progress', 'completed'], default: 'not_started' },
+  weeklyGoalCompletions: { type: Number, default: 0 },
 
   commitmentStartDate: { type: Date, default: Date.now },
   currentStreak: { type: Number, default: 0 },
   streakGoal: { type: Number, default: 20 },
+  streakCompletions: { type: Number, default: 0 },
+  lastActiveDate: { type: Date, default: null },
+  profileImage: { type: String, default: "" },
   badges: [{ type: String }]
 }, { timestamps: true });
 

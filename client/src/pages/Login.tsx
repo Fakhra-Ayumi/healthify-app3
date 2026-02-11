@@ -39,10 +39,14 @@ const Login = () => {
       alert(`Welcome back, ${user.username}!`);
       navigate('/app');
       
-    } catch (err: any) {
-      /*  Error Handling: Checks for specific backend messages
-          before falling back to a generic network error message. */
-      const message = err.response?.data?.message || 'Login failed. Please check your credentials.';
+    } catch (err) {
+      /* Error handling: narrow the unknown catch value safely. */
+      let message = 'Login failed. Please check your credentials.';
+      if (axios.isAxiosError(err)) {
+        message = err.response?.data?.message || message;
+      } else if (err instanceof Error) {
+        message = err.message || message;
+      }
       alert(message);
     }
   };
@@ -55,7 +59,7 @@ const Login = () => {
             Healthify
           </Typography>
           <Typography variant="body2" align="center" color="textSecondary" sx={{ mb: 4 }}>
-            Log in to continue your streak
+            Log in to continue your streak!
           </Typography>
 
           <form onSubmit={handleLogin}>

@@ -27,8 +27,11 @@ const Signup = () => {
       localStorage.setItem('token', response.data.token);
       alert('Registration successful!');
       navigate('/app');
-    } catch (err: any) {
-      alert(err.response?.data?.message || 'Registration failed');
+    } catch (err) {
+      const message = axios.isAxiosError(err) 
+        ? err.response?.data?.message 
+        : err instanceof Error ? err.message : 'Registration failed';
+      alert(message);
     }
   };
 
