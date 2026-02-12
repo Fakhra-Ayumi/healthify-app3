@@ -68,6 +68,30 @@ const Login = () => {
                   variant="filled"
                   onChange={handleChange}
                   required
+                  sx={{
+                    "& .MuiFilledInput-root": {
+                      backgroundColor: "#000",
+                      color: "#fff",
+                      "&:hover": {
+                        backgroundColor: "#111",
+                      },
+                      "&.Mui-focused": {
+                        backgroundColor: "#000",
+                      },
+                    },
+                    "& .MuiInputLabel-root": {
+                      color: "#ccc",
+                    },
+                    "& .MuiInputLabel-root.Mui-focused": {
+                      color: "#fff",
+                    },
+                    "& .MuiFilledInput-underline:before": {
+                      borderBottomColor: "#000",
+                    },
+                    "& .MuiFilledInput-underline:after": {
+                      borderBottomColor: "#ccc",
+                    },
+                  }}
                 />
               </Grid>
               <Grid size={12}>
@@ -79,6 +103,30 @@ const Login = () => {
                   variant="filled"
                   onChange={handleChange}
                   required
+                  sx={{
+                    "& .MuiFilledInput-root": {
+                      backgroundColor: "#000",
+                      color: "#fff",
+                      "&:hover": {
+                        backgroundColor: "#111",
+                      },
+                      "&.Mui-focused": {
+                        backgroundColor: "#000",
+                      },
+                    },
+                    "& .MuiInputLabel-root": {
+                      color: "#ccc",
+                    },
+                    "& .MuiInputLabel-root.Mui-focused": {
+                      color: "#fff",
+                    },
+                    "& .MuiFilledInput-underline:before": {
+                      borderBottomColor: "#000",
+                    },
+                    "& .MuiFilledInput-underline:after": {
+                      borderBottomColor: "#ccc",
+                    },
+                  }}
                 />
               </Grid>
             </Grid>

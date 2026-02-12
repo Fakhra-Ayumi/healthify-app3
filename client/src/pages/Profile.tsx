@@ -611,7 +611,7 @@ const Profile = () => {
         <DialogTitle sx={{ color: '#fff' }}>Logout</DialogTitle>
         <DialogContent>
           <DialogContentText sx={{ color: '#fff' }}>
-            Have you marked your menu as complete to update your streak? 
+            Have you marked your menu as complete? This will update your record. 
             Make sure to do so before logging out!
           </DialogContentText>
         </DialogContent>

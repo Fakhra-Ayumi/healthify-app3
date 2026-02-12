@@ -180,6 +180,9 @@ const Milestones = () => {
       >
         Weekly Progress
       </Typography>
+      <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+        Displays your completion rate of daily workouts over the past 2 weeks. Scroll to see today's progress highlighted.
+      </Typography>
       <Paper
         elevation={3}
         sx={{
