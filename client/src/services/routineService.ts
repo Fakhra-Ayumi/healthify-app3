@@ -1,11 +1,11 @@
-import axios from 'axios';
-import type { Workout } from '../types/workout';
+import axios from "axios";
+import type { Workout } from "../types/workout";
 
-const API_URL = 'http://localhost:8000/api/workouts';
+const API_URL = "http://localhost:8000/api/workouts";
 
 // Helper to get auth header
 const getAuthHeader = () => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   return { headers: { Authorization: `Bearer ${token}` } };
 };
 
@@ -18,8 +18,13 @@ export interface WorkoutLogEntry {
   unit: string;
 }
 
-export const fetchWorkoutHistory = async (days: number = 14): Promise<WorkoutLogEntry[]> => {
-  const response = await axios.get(`${API_URL}/history?days=${days}`, getAuthHeader());
+export const fetchWorkoutHistory = async (
+  days: number = 14,
+): Promise<WorkoutLogEntry[]> => {
+  const response = await axios.get(
+    `${API_URL}/history?days=${days}`,
+    getAuthHeader(),
+  );
   return response.data;
 };
 
@@ -33,8 +38,15 @@ export const createWorkout = async (workout: Workout): Promise<Workout> => {
   return response.data;
 };
 
-export const updateWorkoutService = async (id: string, workout: Workout): Promise<Workout> => {
-  const response = await axios.put(`${API_URL}/${id}`, workout, getAuthHeader());
+export const updateWorkoutService = async (
+  id: string,
+  workout: Workout,
+): Promise<Workout> => {
+  const response = await axios.put(
+    `${API_URL}/${id}`,
+    workout,
+    getAuthHeader(),
+  );
   return response.data;
 };
 

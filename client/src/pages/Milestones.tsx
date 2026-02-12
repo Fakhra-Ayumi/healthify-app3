@@ -61,8 +61,8 @@ const Milestones = () => {
       const dayNum = d.getDate();
       const isToday = i === 0;
       const pct = completions[dateKey] as number | undefined;
+      // undefined for no record for that day
 
-      // undefined means no record for that day
       data.push({ date: d, dayNum, pct: pct ?? null, isToday });
     }
     return data;
@@ -74,7 +74,7 @@ const Milestones = () => {
     const relevantLogs = history.filter((h) => h.parameter === parameterType);
     if (!relevantLogs.length) return [];
 
-    // Group by date string (short format)
+    // Group by date string
     const grouped: Record<string, number[]> = {};
     const weekMap: Record<string, Date> = {};
 
@@ -139,7 +139,6 @@ const Milestones = () => {
 
   const weeklyData = getWeeklyProgressData();
   const pieData = getImprovementData();
-  // Gradient of purple shades
   const COLORS = ["#a34efe", "#b975fe", "#cf9cfe", "#e5c3fe"];
 
   if (!mounted) return null; // Avoid rehydration mismatches if any
@@ -181,7 +180,8 @@ const Milestones = () => {
         Weekly Progress
       </Typography>
       <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-        Displays your completion rate of daily workouts over the past 2 weeks. Scroll to see today's progress highlighted.
+        Displays your completion rate of daily workouts over the past 2 weeks.
+        Scroll to see today's progress highlighted.
       </Typography>
       <Paper
         elevation={3}
@@ -244,20 +244,35 @@ const Milestones = () => {
                     alignItems: "center",
                     justifyContent: "center",
                     bgcolor: bgColor,
-                    border: day.isToday && day.pct === null ? "1px dashed #ccc" : "none",
+                    border:
+                      day.isToday && day.pct === null
+                        ? "1px dashed #ccc"
+                        : "none",
                   }}
                 >
                   {isMissed ? (
                     <CloseIcon sx={{ color: "#fff", fontSize: 16 }} />
                   ) : label ? (
-                    <Typography sx={{ fontSize: "0.6rem", fontWeight: "bold", color: textColor, lineHeight: 1 }}>
+                    <Typography
+                      sx={{
+                        fontSize: "0.6rem",
+                        fontWeight: "bold",
+                        color: textColor,
+                        lineHeight: 1,
+                      }}
+                    >
                       {label}
                     </Typography>
                   ) : null}
                 </Box>
                 <Typography
                   variant="body2"
-                  sx={{ mt: 1, fontWeight: "bold", color: "#000", fontSize: "0.9rem" }}
+                  sx={{
+                    mt: 1,
+                    fontWeight: "bold",
+                    color: "#000",
+                    fontSize: "0.9rem",
+                  }}
                 >
                   {`${day.date.getMonth() + 1}/${day.dayNum}`}
                 </Typography>
@@ -269,7 +284,14 @@ const Milestones = () => {
 
       {/* Activity Tracker Section */}
       <Box>
-        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", mb: 0.5 }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "baseline",
+            mb: 0.5,
+          }}
+        >
           <Typography variant="h5" sx={{ fontWeight: "bold", color: "#000" }}>
             Activity Tracker
           </Typography>
@@ -347,7 +369,10 @@ const Milestones = () => {
 
       {/* Improvement Rate Distribution Section */}
       <Box sx={{ mt: 4 }}>
-        <Typography variant="h5" sx={{ fontWeight: "bold", color: "#000", mb: 0.5 }}>
+        <Typography
+          variant="h5"
+          sx={{ fontWeight: "bold", color: "#000", mb: 0.5 }}
+        >
           Improvement Rate Distribution
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>

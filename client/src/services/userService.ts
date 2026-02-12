@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from "axios";
 
 // Define the User interface matching the backend model
 export interface Badge {
@@ -6,7 +6,7 @@ export interface Badge {
   name: string;
   description: string;
   icon: string;
-  tier: 'bronze' | 'silver' | 'gold';
+  tier: "bronze" | "silver" | "gold";
 }
 
 export interface UserProfile {
@@ -17,10 +17,10 @@ export interface UserProfile {
   email: string;
   purpose: string;
   threeMonthGoal: string;
-  threeMonthGoalStatus: 'not_started' | 'in_progress' | 'completed';
+  threeMonthGoalStatus: "not_started" | "in_progress" | "completed";
   threeMonthGoalCompletions: number;
   weeklyGoal: string;
-  weeklyGoalStatus: 'not_started' | 'in_progress' | 'completed';
+  weeklyGoalStatus: "not_started" | "in_progress" | "completed";
   weeklyGoalCompletions: number;
   weeklyGoalLockIn?: Date | null;
   threeMonthGoalLockIn?: Date | null;
@@ -28,7 +28,7 @@ export interface UserProfile {
   threeMonthGoalLockInCount: number;
   commitmentStartDate?: string;
   currentStreak: number;
-  streakDates?: string[]; // Array of ISO date strings
+  streakDates?: string[];
   streakGoal: number;
   streakCompletions: number;
   lastActiveDate?: string | null;
@@ -38,14 +38,14 @@ export interface UserProfile {
 }
 
 export const fetchBadges = async (): Promise<Badge[]> => {
-  const response = await axios.get('http://localhost:8000/api/badges');
+  const response = await axios.get("http://localhost:8000/api/badges");
   return response.data;
 };
 
-const API_URL = 'http://localhost:8000/api/auth/profile';
+const API_URL = "http://localhost:8000/api/auth/profile";
 
 const getAuthHeader = () => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   return { headers: { Authorization: `Bearer ${token}` } };
 };
 
@@ -54,7 +54,9 @@ export const fetchUserProfile = async (): Promise<UserProfile> => {
   return response.data;
 };
 
-export const updateUserProfile = async (updates: Partial<UserProfile>): Promise<UserProfile> => {
+export const updateUserProfile = async (
+  updates: Partial<UserProfile>,
+): Promise<UserProfile> => {
   const response = await axios.put(API_URL, updates, getAuthHeader());
   return response.data;
 };

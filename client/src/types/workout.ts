@@ -1,18 +1,18 @@
 // Client-side types matching server Workout model
-export type ParameterType = 
-  | 'Weight' 
-  | 'Time' 
-  | 'Distance' 
-  | 'Reps' 
-  | 'Sets'
-  | 'Rest'
-  | 'Incline'
-  | 'Speed'
-  | 'Resistance'
-  | 'Cadence'
-  | 'Height';
+export type ParameterType =
+  | "Weight"
+  | "Time"
+  | "Distance"
+  | "Reps"
+  | "Sets"
+  | "Rest"
+  | "Incline"
+  | "Speed"
+  | "Resistance"
+  | "Cadence"
+  | "Height";
 
-export type SetStatus = 'completed' | 'incomplete' | 'partial' | 'none';
+export type SetStatus = "completed" | "incomplete" | "partial" | "none";
 
 export interface Set {
   parameter: ParameterType;

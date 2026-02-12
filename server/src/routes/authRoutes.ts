@@ -1,7 +1,12 @@
-import { Router } from 'express';
-import { body, validationResult } from 'express-validator';
-import { register, login, getProfile, updateProfile } from '../controllers/authController';
-import { authenticateToken } from '../middleware/auth';
+import { Router } from "express";
+import { body, validationResult } from "express-validator";
+import {
+  register,
+  login,
+  getProfile,
+  updateProfile,
+} from "../controllers/authController";
+import { authenticateToken } from "../middleware/auth";
 
 const router = Router();
 
@@ -15,30 +20,32 @@ const validate = (req: any, res: any, next: any) => {
 };
 
 router.post(
-  '/register',
+  "/register",
   [
-    body('email').isEmail().withMessage('Enter a valid email'),
-    body('confirmEmail').custom((value, { req }) => {
+    body("email").isEmail().withMessage("Enter a valid email"),
+    body("confirmEmail").custom((value, { req }) => {
       if (value !== req.body.email) {
-        throw new Error('Emails do not match');
+        throw new Error("Emails do not match");
       }
       return true;
     }),
-    body('password').isLength({ min: 6 }).withMessage('Password must be at least 6 characters'),
-    body('confirmPassword').custom((value, { req }) => {
+    body("password")
+      .isLength({ min: 6 })
+      .withMessage("Password must be at least 6 characters"),
+    body("confirmPassword").custom((value, { req }) => {
       if (value !== req.body.password) {
-        throw new Error('Passwords do not match');
+        throw new Error("Passwords do not match");
       }
       return true;
     }),
   ],
   validate,
-  register
+  register,
 );
 
-router.post('/login', login);
+router.post("/login", login);
 
-router.get('/profile', authenticateToken, getProfile);
-router.put('/profile', authenticateToken, updateProfile);
+router.get("/profile", authenticateToken, getProfile);
+router.put("/profile", authenticateToken, updateProfile);
 
 export default router;

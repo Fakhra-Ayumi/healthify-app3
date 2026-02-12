@@ -1,5 +1,5 @@
-import { User, IUser } from '../models/User';
-import { Badge } from '../models/Badge';
+import { User, IUser } from "../models/User";
+import { Badge } from "../models/Badge";
 
 export const evaluateBadges = async (userId: string): Promise<IUser | null> => {
   const user = await User.findById(userId);
@@ -13,13 +13,17 @@ export const evaluateBadges = async (userId: string): Promise<IUser | null> => {
 
     let earned = false;
     switch (badge.criteriaType) {
-      case 'weekly_goal':
-        earned = user.weeklyGoalCompletions >= badge.criteriaValue && user.weeklyGoalLockInCount >= badge.criteriaValue;
+      case "weekly_goal":
+        earned =
+          user.weeklyGoalCompletions >= badge.criteriaValue &&
+          user.weeklyGoalLockInCount >= badge.criteriaValue;
         break;
-      case 'three_month_goal':
-        earned = user.threeMonthGoalCompletions >= badge.criteriaValue && user.threeMonthGoalLockInCount >= badge.criteriaValue;
+      case "three_month_goal":
+        earned =
+          user.threeMonthGoalCompletions >= badge.criteriaValue &&
+          user.threeMonthGoalLockInCount >= badge.criteriaValue;
         break;
-      case 'streak':
+      case "streak":
         earned = user.streakCompletions >= badge.criteriaValue;
         break;
     }

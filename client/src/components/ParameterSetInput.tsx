@@ -1,8 +1,16 @@
-import { useState } from 'react';
-import { Box, TextField, Select, MenuItem, IconButton, FormControl, InputLabel } from '@mui/material';
-import CheckIcon from '@mui/icons-material/Check';
-import CloseIcon from '@mui/icons-material/Close';
-import type { Set as WorkoutSet, ParameterType } from '../types/workout';
+import { useState } from "react";
+import {
+  Box,
+  TextField,
+  Select,
+  MenuItem,
+  IconButton,
+  FormControl,
+  InputLabel,
+} from "@mui/material";
+import CheckIcon from "@mui/icons-material/Check";
+import CloseIcon from "@mui/icons-material/Close";
+import type { Set as WorkoutSet, ParameterType } from "../types/workout";
 
 interface ParameterSetInputProps {
   onSave: (set: WorkoutSet) => void;
@@ -18,38 +26,44 @@ const ParameterSetInput: React.FC<ParameterSetInputProps> = ({
   /* Parameter-to-unit mapping */
   const getUnitsForParameter = (param: ParameterType): string[] => {
     switch (param) {
-      case 'Time':
-        return ['s', 'min', 'h'];
-      case 'Distance':
-        return ['m', 'km', 'mi'];
-      case 'Weight':
-        return ['kg', 'lb', 'g'];
-      case 'Reps':
-        return ['times'];
-      case 'Sets':
-        return ['times'];
-      case 'Rest':
-        return ['min', 's'];
-      case 'Incline':
-        return ['%'];
-      case 'Speed':
-        return ['km/h', 'mph'];
-      case 'Resistance':
-        return ['Level'];
-      case 'Cadence':
-        return ['rpm', 'spm'];
-      case 'Height':
-        return ['cm', 'in'];
+      case "Time":
+        return ["s", "min", "h"];
+      case "Distance":
+        return ["m", "km", "mi"];
+      case "Weight":
+        return ["kg", "lb", "g"];
+      case "Reps":
+        return ["times"];
+      case "Sets":
+        return ["times"];
+      case "Rest":
+        return ["min", "s"];
+      case "Incline":
+        return ["%"];
+      case "Speed":
+        return ["km/h", "mph"];
+      case "Resistance":
+        return ["Level"];
+      case "Cadence":
+        return ["rpm", "spm"];
+      case "Height":
+        return ["cm", "in"];
       default:
-        return [''];
+        return [""];
     }
   };
 
   // Initialize state with safe defaults derived from parameter-to-unit mapping
-  const [parameter, setParameter] = useState<ParameterType>(initialSet?.parameter || 'Time');
-  const [value, setValue] = useState<string>(initialSet?.value?.toString() || '');
+  const [parameter, setParameter] = useState<ParameterType>(
+    initialSet?.parameter || "Time",
+  );
+  const [value, setValue] = useState<string>(
+    initialSet?.value?.toString() || "",
+  );
   const initialUnits = getUnitsForParameter(initialSet?.parameter || parameter);
-  const [unit, setUnit] = useState<string>(initialSet?.unit || initialUnits[0] || '');
+  const [unit, setUnit] = useState<string>(
+    initialSet?.unit || initialUnits[0] || "",
+  );
 
   const handleSave = () => {
     const numValue = parseFloat(value);
@@ -58,7 +72,7 @@ const ParameterSetInput: React.FC<ParameterSetInputProps> = ({
         parameter,
         value: numValue,
         unit,
-        status: 'none',
+        status: "none",
       });
     }
   };
@@ -66,24 +80,30 @@ const ParameterSetInput: React.FC<ParameterSetInputProps> = ({
   const handleParameterChange = (newParam: ParameterType) => {
     setParameter(newParam);
     const units = getUnitsForParameter(newParam);
-    setUnit(units[0] || '');
+    setUnit(units[0] || "");
   };
 
   return (
-    <Box sx={{ 
-      display: 'flex', 
-      gap: 1, 
-      alignItems: 'flex-start', 
-      flexWrap: 'wrap',
-      '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(0,0,0,0.4)' },
-    }}>
+    <Box
+      sx={{
+        display: "flex",
+        gap: 1,
+        alignItems: "flex-start",
+        flexWrap: "wrap",
+        "& .MuiOutlinedInput-notchedOutline": {
+          borderColor: "rgba(0,0,0,0.4)",
+        },
+      }}
+    >
       {/* Parameter Dropdown */}
       <FormControl size="small" sx={{ minWidth: 120 }}>
         <InputLabel>Parameter</InputLabel>
         <Select
           value={parameter}
           label="Parameter"
-          onChange={(e) => handleParameterChange(e.target.value as ParameterType)}
+          onChange={(e) =>
+            handleParameterChange(e.target.value as ParameterType)
+          }
         >
           <MenuItem value="Time">Time</MenuItem>
           <MenuItem value="Distance">Distance</MenuItem>
@@ -107,8 +127,8 @@ const ParameterSetInput: React.FC<ParameterSetInputProps> = ({
         value={value}
         onChange={(e) => setValue(e.target.value)}
         onKeyDown={(e) => {
-          if (e.key === 'Enter') handleSave();
-          if (e.key === 'Escape') onCancel();
+          if (e.key === "Enter") handleSave();
+          if (e.key === "Escape") onCancel();
         }}
         sx={{ width: 100 }}
       />
@@ -116,7 +136,11 @@ const ParameterSetInput: React.FC<ParameterSetInputProps> = ({
       {/* Unit Dropdown */}
       <FormControl size="small" sx={{ minWidth: 80 }}>
         <InputLabel>Unit</InputLabel>
-        <Select value={unit} label="Unit" onChange={(e) => setUnit(e.target.value)}>
+        <Select
+          value={unit}
+          label="Unit"
+          onChange={(e) => setUnit(e.target.value)}
+        >
           {getUnitsForParameter(parameter).map((u) => (
             <MenuItem key={u} value={u}>
               {u}
@@ -129,11 +153,19 @@ const ParameterSetInput: React.FC<ParameterSetInputProps> = ({
       <IconButton
         size="small"
         onClick={handleSave}
-        sx={{ bgcolor: 'success.light', color: '#fff', '&:hover': { bgcolor: 'success.main' } }}
+        sx={{
+          bgcolor: "success.light",
+          color: "#fff",
+          "&:hover": { bgcolor: "success.main" },
+        }}
       >
         <CheckIcon sx={{ fontSize: 20 }} />
       </IconButton>
-      <IconButton size="small" onClick={onCancel} sx={{ bgcolor: 'action.hover' }}>
+      <IconButton
+        size="small"
+        onClick={onCancel}
+        sx={{ bgcolor: "action.hover" }}
+      >
         <CloseIcon sx={{ fontSize: 20 }} />
       </IconButton>
     </Box>

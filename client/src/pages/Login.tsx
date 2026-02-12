@@ -17,10 +17,7 @@ const Login = () => {
     setCredentials({ ...credentials, [e.target.name]: e.target.value });
   };
 
-  /**
-   * Processes the login attempt.
-   * On success, stores the JWT in localStorage for persistent sessions.
-   */
+  /* Processes the login attempt. On success, stores the JWT in localStorage for persistent sessions. */
   const handleLogin = async (e: React.SyntheticEvent) => {
     e.preventDefault();
 
@@ -28,7 +25,7 @@ const Login = () => {
       const response = await axios.post('http://localhost:8000/api/auth/login', credentials);
       const { token, user } = response.data;
       
-      /*Store the JWT in localStorage to keep the user logged in across refreshes.*/
+      /* Store the JWT in localStorage to keep the user logged in across refreshes. */
       localStorage.setItem('token', token);
       localStorage.setItem('user', JSON.stringify(user));
 
@@ -36,7 +33,7 @@ const Login = () => {
       navigate('/app');
       
     } catch (err) {
-      /* Error handling: narrow the unknown catch value safely. */
+      /* Error handling: manage the unknown catch value safely. */
       let message = 'Login failed. Please check your credentials.';
       if (axios.isAxiosError(err)) {
         message = err.response?.data?.message || message;

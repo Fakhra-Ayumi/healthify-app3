@@ -1,9 +1,14 @@
-import { useState, useEffect } from 'react';
-import { Box, Typography, Paper } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
-import type { Workout } from '../types/workout';
-import MenuCard from '../components/MenuCard';
-import { fetchWorkouts, createWorkout, updateWorkoutService, deleteWorkoutService } from '../services/routineService';
+import { useState, useEffect } from "react";
+import { Box, Typography, Paper } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
+import type { Workout } from "../types/workout";
+import MenuCard from "../components/MenuCard";
+import {
+  fetchWorkouts,
+  createWorkout,
+  updateWorkoutService,
+  deleteWorkoutService,
+} from "../services/routineService";
 
 const RoutineBuilder: React.FC = () => {
   const [workouts, setWorkouts] = useState<Workout[]>([]);
@@ -16,7 +21,7 @@ const RoutineBuilder: React.FC = () => {
         const data = await fetchWorkouts();
         setWorkouts(data);
       } catch (err) {
-        console.error('Failed to load workouts:', err);
+        console.error("Failed to load workouts:", err);
       }
     };
     loadWorkouts();
@@ -25,7 +30,7 @@ const RoutineBuilder: React.FC = () => {
   const handleAddMenu = async () => {
     const newWorkout: Workout = {
       day: getDayName(workouts.length),
-      title: 'Menu Title',
+      title: "Menu Title",
       activities: [],
     };
 
@@ -33,55 +38,64 @@ const RoutineBuilder: React.FC = () => {
     const timestamp = new Date().getTime();
     const tempId = `temp-${timestamp}`;
     const optimisticWorkout = { ...newWorkout, _id: tempId } as Workout;
-    setWorkouts(prev => [...prev, optimisticWorkout]);
+    setWorkouts((prev) => [...prev, optimisticWorkout]);
     setExpandedMenuId(tempId);
 
     try {
       const savedWorkout = await createWorkout(newWorkout);
-      // Replace temp workout with real one
-      setWorkouts(prev => prev.map(w => (w._id === tempId ? savedWorkout : w)));
+      // Replace temporary workout with real one
+      setWorkouts((prev) =>
+        prev.map((w) => (w._id === tempId ? savedWorkout : w)),
+      );
       if (savedWorkout._id) setExpandedMenuId(savedWorkout._id);
     } catch (err) {
-      console.error('Failed to add workout:', err);
+      console.error("Failed to add workout:", err);
       // Revert placeholder data
-      setWorkouts(prev => prev.filter(w => w._id !== tempId));
+      setWorkouts((prev) => prev.filter((w) => w._id !== tempId));
       setExpandedMenuId(null);
     }
   };
 
   const handleUpdateWorkout = async (index: number, updated: Workout) => {
     // Update the placeholder data
-    setWorkouts(prev => {
+    setWorkouts((prev) => {
       const copy = [...prev];
       copy[index] = updated;
       return copy;
     });
 
     try {
-      if (updated._id && !updated._id.startsWith('temp-')) {
+      if (updated._id && !updated._id.startsWith("temp-")) {
         await updateWorkoutService(updated._id, updated);
       }
     } catch (err) {
-      console.error('Failed to update workout:', err);
+      console.error("Failed to update workout:", err);
     }
   };
 
   const handleDeleteWorkout = async (index: number) => {
     const workoutToDelete = workouts[index];
-    // Update the placeholder data
-    setWorkouts(prev => prev.filter((_, i) => i !== index));
+    setWorkouts((prev) => prev.filter((_, i) => i !== index));
 
     try {
-      if (workoutToDelete._id && !workoutToDelete._id.startsWith('temp-')) {
+      if (workoutToDelete._id && !workoutToDelete._id.startsWith("temp-")) {
         await deleteWorkoutService(workoutToDelete._id);
       }
     } catch (err) {
-      console.error('Failed to delete workout:', err);
+      console.error("Failed to delete workout:", err);
     }
   };
 
   const getDayName = (index: number): string => {
-    const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    const days = [
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+      "Sunday",
+    ];
     return days[index % 7];
   };
 
@@ -92,11 +106,23 @@ const RoutineBuilder: React.FC = () => {
   };
 
   return (
-    <Box sx={{ pb: 2, width: '100%', maxWidth: 'md', mx: 'auto' }}>
-      <Typography variant="h6" sx={{ textAlign: 'center', color: 'grey', fontWeight: 'bold' }}>
+    <Box sx={{ pb: 2, width: "100%", maxWidth: "md", mx: "auto" }}>
+      <Typography
+        variant="h6"
+        sx={{ textAlign: "center", color: "grey", fontWeight: "bold" }}
+      >
         Healthify
       </Typography>
-      <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 3, textAlign: 'center', fontStyle: 'italic', color: '#000' }}>
+      <Typography
+        variant="h4"
+        sx={{
+          fontWeight: "bold",
+          mb: 3,
+          textAlign: "center",
+          fontStyle: "italic",
+          color: "#000",
+        }}
+      >
         Routine Builder
       </Typography>
 
@@ -122,22 +148,22 @@ const RoutineBuilder: React.FC = () => {
         sx={{
           p: 2,
           mt: 2,
-          border: '1px solid',
-          borderColor: 'divider',
+          border: "1px solid",
+          borderColor: "divider",
           borderRadius: 2,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          cursor: 'pointer',
-          transition: 'background-color 0.2s',
-          '&:hover': { bgcolor: 'action.hover' },
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          cursor: "pointer",
+          transition: "background-color 0.2s",
+          "&:hover": { bgcolor: "action.hover" },
         }}
         onClick={handleAddMenu}
       >
         <Typography variant="body1" color="text.secondary">
           Add a Menu...
         </Typography>
-        <AddIcon sx={{ color: '#a34efe' }} />
+        <AddIcon sx={{ color: "#a34efe" }} />
       </Paper>
     </Box>
   );
