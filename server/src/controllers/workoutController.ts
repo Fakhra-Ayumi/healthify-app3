@@ -5,20 +5,6 @@ import { WorkoutLog } from "../models/WorkoutLog";
 import { evaluateBadges } from "../services/badgeEvaluator";
 import { AuthRequest } from "../middleware/auth";
 
-// Helper for day index
-const getDayIndex = (day: string) => {
-  const days = [
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-    "Sunday",
-  ];
-  return days.indexOf(day);
-};
-
 export const getWorkouts = async (req: AuthRequest, res: Response) => {
   try {
     const userId = req.user?.userId;

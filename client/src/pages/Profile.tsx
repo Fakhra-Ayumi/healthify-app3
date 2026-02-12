@@ -61,6 +61,7 @@ const Profile = () => {
   const [newBadge, setNewBadge] = useState<Badge | null>(null);
   const [snackbarOpen, setSnackbarOpen] = useState(false);
   const [snackbarMsg, setSnackbarMsg] = useState("");
+  const badgeCountRef = useRef(0);
 
   const handleLogout = () => {
     localStorage.removeItem("token");
@@ -69,71 +70,74 @@ const Profile = () => {
   };
 
   useEffect(() => {
+    const loadProfile = async () => {
+      try {
+        setLoading(true);
+        const [userData, badgesData] = await Promise.all([
+          fetchUserProfile(),
+          fetchBadges(),
+        ]);
+
+        // Check for new badges
+        if (
+          badgeCountRef.current > 0 &&
+          userData.badges.length > badgeCountRef.current
+        ) {
+          const newlyEarnedBadgeName =
+            userData.badges[userData.badges.length - 1];
+          const badgeInfo = badgesData.find(
+            (b) => b.name === newlyEarnedBadgeName,
+          );
+          if (badgeInfo) {
+            setNewBadge(badgeInfo);
+          }
+        }
+        badgeCountRef.current = userData.badges.length;
+
+        // Reset goals if time has passed
+        if (userData.weeklyGoalLockIn) {
+          const lockInDate = new Date(userData.weeklyGoalLockIn);
+          const oneWeek = 7 * 24 * 60 * 60 * 1000;
+          if (new Date().getTime() - lockInDate.getTime() > oneWeek) {
+            userData.weeklyGoalLockIn = null;
+          }
+        }
+        if (userData.threeMonthGoalLockIn) {
+          const lockInDate = new Date(userData.threeMonthGoalLockIn);
+          const threeMonths = 3 * 30 * 24 * 60 * 60 * 1000;
+          if (new Date().getTime() - lockInDate.getTime() > threeMonths) {
+            userData.threeMonthGoalLockIn = null;
+          }
+        }
+
+        setUser(userData);
+        setAvailableBadges(badgesData);
+
+        // Snackbar: 7-day consistency milestone
+        const streakLen = userData.streakDates?.length ?? 0;
+        const cycleKey = `snackbar_7day_${userData.commitmentStartDate ?? "default"}`;
+        if (streakLen >= 7 && !localStorage.getItem(cycleKey)) {
+          localStorage.setItem(cycleKey, "true");
+          setSnackbarMsg(
+            "Amazing! You've hit 7 days of consistent commitment! Keep the momentum going!",
+          );
+          setSnackbarOpen(true);
+        }
+        setFormData({
+          firstName: userData.firstName || "",
+          lastName: userData.lastName || "",
+          purpose: userData.purpose || "",
+          threeMonthGoal: userData.threeMonthGoal || "",
+          weeklyGoal: userData.weeklyGoal || "",
+        });
+      } catch (err) {
+        console.error("Failed to load profile", err);
+      } finally {
+        setLoading(false);
+      }
+    };
     loadProfile();
   }, []);
-
-  const loadProfile = async () => {
-    try {
-      setLoading(true);
-      const [userData, badgesData] = await Promise.all([
-        fetchUserProfile(),
-        fetchBadges(),
-      ]);
-
-      // Check for new badges
-      if (user && userData.badges.length > user.badges.length) {
-        const newlyEarnedBadgeName =
-          userData.badges[userData.badges.length - 1];
-        const badgeInfo = badgesData.find(
-          (b) => b.name === newlyEarnedBadgeName,
-        );
-        if (badgeInfo) {
-          setNewBadge(badgeInfo);
-        }
-      }
-
-      // Reset goals if time has passed
-      if (userData.weeklyGoalLockIn) {
-        const lockInDate = new Date(userData.weeklyGoalLockIn);
-        const oneWeek = 7 * 24 * 60 * 60 * 1000;
-        if (new Date().getTime() - lockInDate.getTime() > oneWeek) {
-          userData.weeklyGoalLockIn = null;
-        }
-      }
-      if (userData.threeMonthGoalLockIn) {
-        const lockInDate = new Date(userData.threeMonthGoalLockIn);
-        const threeMonths = 3 * 30 * 24 * 60 * 60 * 1000;
-        if (new Date().getTime() - lockInDate.getTime() > threeMonths) {
-          userData.threeMonthGoalLockIn = null;
-        }
-      }
-
-      setUser(userData);
-      setAvailableBadges(badgesData);
-
-      // Snackbar: 7-day consistency milestone
-      const streakLen = userData.streakDates?.length ?? 0;
-      const cycleKey = `snackbar_7day_${userData.commitmentStartDate ?? "default"}`;
-      if (streakLen >= 7 && !localStorage.getItem(cycleKey)) {
-        localStorage.setItem(cycleKey, "true");
-        setSnackbarMsg(
-          "Amazing! You've hit 7 days of consistent commitment! Keep the momentum going!",
-        );
-        setSnackbarOpen(true);
-      }
-      setFormData({
-        firstName: userData.firstName || "",
-        lastName: userData.lastName || "",
-        purpose: userData.purpose || "",
-        threeMonthGoal: userData.threeMonthGoal || "",
-        weeklyGoal: userData.weeklyGoal || "",
-      });
-    } catch (err) {
-      console.error("Failed to load profile", err);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const handleLockInClick = (goalType: "weekly" | "threeMonth") => {
     setGoalToLock(goalType);
@@ -685,7 +689,7 @@ const Profile = () => {
           <Box
             sx={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(44px, 1fr))", 
+              gridTemplateColumns: "repeat(auto-fit, minmax(44px, 1fr))",
               gap: 1.5,
               mt: 1,
               width: "100%",
@@ -793,7 +797,8 @@ const Profile = () => {
         <DialogTitle sx={{ color: "#fff" }}>Confirm Goal Lock-in</DialogTitle>
         <DialogContent>
           <DialogContentText sx={{ color: "#fff" }}>
-            Are you sure you want to lock in this goal? You won't be able to edit it after locking it in.
+            Are you sure you want to lock in this goal? You won't be able to
+            edit it after locking it in.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -820,7 +825,8 @@ const Profile = () => {
         <DialogTitle sx={{ color: "#fff" }}>Logout</DialogTitle>
         <DialogContent>
           <DialogContentText sx={{ color: "#fff" }}>
-            Have you marked your menu as complete? This will update your record. Make sure to do so before logging out!
+            Have you marked your menu as complete? This will update your record.
+            Make sure to do so before logging out!
           </DialogContentText>
         </DialogContent>
         <DialogActions>

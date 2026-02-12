@@ -1,8 +1,7 @@
 import { expect } from "chai";
 import request from "supertest";
 import mongoose from "mongoose";
-import { app, testUser, registerAndLogin } from "../helpers";
-import { User } from "../../src/models/User";
+import { app, registerAndLogin } from "../helpers";
 
 describe("Integration: Profile — Get & Update", () => {
   let token: string;
