@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Box, Typography, Paper, CircularProgress } from "@mui/material";
-import CheckIcon from "@mui/icons-material/Check";
 import CloseIcon from "@mui/icons-material/Close";
 import {
   LineChart,
@@ -50,10 +49,15 @@ const Milestones = () => {
   const getStreakData = () => {
     if (!user) return [];
 
-    // We use user.commitmentStartDate
+    // Default display window: start 7 days before today
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const defaultStart = new Date(today);
+    defaultStart.setDate(defaultStart.getDate() - 7);
+    // Use commitmentStartDate when present, otherwise show from 7 days ago
     const startDate = user.commitmentStartDate
       ? new Date(user.commitmentStartDate)
-      : new Date();
+      : defaultStart;
     const daysToShow = 20;
     const data = [];
 
@@ -215,37 +219,34 @@ const Milestones = () => {
                 mx: 0.5,
               }}
             >
-              <Box
-                sx={{
-                  width: 44,
-                  height: 44,
-                  borderRadius: "50%",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  bgcolor:
-                    day.status === "recorded"
-                      ? "transparent"
-                      : day.status === "missed"
+                <Box
+                  sx={{
+                    width: 44,
+                    height: 44,
+                    borderRadius: "50%",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    bgcolor:
+                      day.status === "recorded"
+                        ? "transparent"
+                        : day.status === "missed"
                         ? "#aaa"
                         : "#f5f5f5",
-                  border: day.status === "future" ? "1px dashed #ccc" : "none",
-                }}
-              >
-                {day.status === "recorded" && (
-                  <CheckIcon
-                    sx={{
-                      color: "#000",
-                      fontSize: 24,
-                      stroke: "#000",
-                      strokeWidth: 2,
-                    }}
-                  />
-                )}
-                {day.status === "missed" && (
-                  <CloseIcon sx={{ color: "#fff", fontSize: 16 }} />
-                )}
-              </Box>
+                    border: day.status === "future" ? "1px dashed #ccc" : "none",
+                  }}
+                >
+                  {day.status === "recorded" && (
+                    <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
+                      <Box sx={{ width: 40, height: 40, borderRadius: "50%", border: "2px solid #a34efe", display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Box sx={{ width: 22, height: 22, borderRadius: '50%', bgcolor: '#a34efe' }} />
+                      </Box>
+                    </Box>
+                  )}
+                  {day.status === "missed" && (
+                    <CloseIcon sx={{ color: "#fff", fontSize: 16 }} />
+                  )}
+                </Box>
               <Typography
                 variant="body2"
                 sx={{

@@ -11,7 +11,6 @@ import DirectionsRunIcon from '@mui/icons-material/DirectionsRun';
 import DirectionsBikeIcon from '@mui/icons-material/DirectionsBike';
 import SelfImprovementIcon from '@mui/icons-material/SelfImprovement';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
-import CheckIcon from '@mui/icons-material/Check';
 
 import { fetchUserProfile, updateUserProfile, fetchBadges, type UserProfile, type Badge } from '../services/userService';
 
@@ -534,37 +533,35 @@ const Profile = () => {
             }}
           >
             {Array.from({ length: 20 }).map((_, index) => {
-              // Calculate the date for this circle
-              const startDate = user.commitmentStartDate ? new Date(user.commitmentStartDate) : new Date();
-              const dateForCircle = new Date(startDate);
-              dateForCircle.setDate(startDate.getDate() + index);
-              
-              const dayNumber = dateForCircle.getDate();
-              
-              const dateStr = dateForCircle.toDateString();
-              const isRecorded = user.streakDates?.some((d: string) => new Date(d).toDateString() === dateStr);
-              
+              // Default start: 7 days before today unless user has a commitment start
               const today = new Date();
               today.setHours(0,0,0,0);
+              const defaultStart = new Date(today);
+              defaultStart.setDate(defaultStart.getDate() - 7);
+              const startDate = user.commitmentStartDate ? new Date(user.commitmentStartDate) : defaultStart;
+              const dateForCircle = new Date(startDate);
+              dateForCircle.setDate(startDate.getDate() + index);
+
+              const dayNumber = dateForCircle.getDate();
+
+              const dateStr = dateForCircle.toDateString();
+              const isRecorded = user.streakDates?.some((d: string) => new Date(d).toDateString() === dateStr);
+
               const isFuture = dateForCircle.getTime() > today.getTime();
+              const isToday = dateForCircle.getTime() === today.getTime();
+              // Default border: light grey for future, white for past/now
+              let borderColor = isFuture ? '#eee' : '#a34efe';
+              // If the day is recorded, use purple outline
+              if (isRecorded) borderColor = '#a34efe';
+              // Ensure today's recorded day is highlighted (purple)
+              if (isToday && isRecorded) borderColor = '#a34efe';
 
               return (
                 <Box key={index} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-                  <Box
-                    sx={{
-                      width: 44, 
-                      height: 44, 
-                      borderRadius: '50%',
-                      bgcolor: isRecorded ? 'transparent' : 'transparent',
-                      border: '2px solid',
-                      borderColor: isFuture ? '#eee' : '#000',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      mb: 0.5
-                    }}
-                  >
-                    {isRecorded && <CheckIcon sx={{ color: '#000', fontSize: 24, stroke: '#000', strokeWidth: 2 }} />}
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 0.5 }}>
+                    <Box sx={{ width: 40, height: 40, borderRadius: '50%', border: `2px solid ${borderColor}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      {isRecorded ? <Box sx={{ width: 22, height: 22, borderRadius: '50%', bgcolor: '#a34efe' }} /> : <Box sx={{ width: 22, height: 22, borderRadius: '50%', bgcolor: 'transparent' }} />}
+                    </Box>
                   </Box>
                   <Typography variant="caption" sx={{ color: isFuture ? '#ccc' : '#000', fontWeight: 'bold' }}>
                     {dayNumber}
