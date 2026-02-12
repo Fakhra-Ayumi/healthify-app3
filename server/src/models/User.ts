@@ -26,6 +26,7 @@ export interface IUser extends Document {
   lastActiveDate?: Date | null;
   profileImage?: string; // Base64 or URL
   badges: string[];
+  dailyCompletions: Map<string, number>;
 }
 
 // Schema for MongoDB
@@ -58,7 +59,8 @@ const UserSchema = new Schema<IUser>({
   streakCompletions: { type: Number, default: 0 },
   lastActiveDate: { type: Date, default: null },
   profileImage: { type: String, default: "" },
-  badges: [{ type: String }]
+  badges: [{ type: String }],
+  dailyCompletions: { type: Map, of: Number, default: {} }
 }, { timestamps: true });
 
 export const User = model<IUser>('User', UserSchema);

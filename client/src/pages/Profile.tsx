@@ -2,7 +2,8 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Box, Typography, Paper, Avatar, TextField, CircularProgress, Tooltip, Select, MenuItem, 
-  IconButton, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle 
+  IconButton, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
+  Snackbar, Alert
 } from '@mui/material';
 import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import CloseIcon from '@mui/icons-material/Close';
@@ -35,6 +36,8 @@ const Profile = () => {
   const [open, setOpen] = useState(false);
   const [goalToLock, setGoalToLock] = useState<'weekly' | 'threeMonth' | null>(null);
   const [newBadge, setNewBadge] = useState<Badge | null>(null);
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMsg, setSnackbarMsg] = useState('');
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -81,6 +84,15 @@ const Profile = () => {
 
       setUser(userData);
       setAvailableBadges(badgesData);
+
+      // Snackbar: 7-day consistency milestone
+      const streakLen = userData.streakDates?.length ?? 0;
+      const cycleKey = `snackbar_7day_${userData.commitmentStartDate ?? 'default'}`;
+      if (streakLen >= 7 && !localStorage.getItem(cycleKey)) {
+        localStorage.setItem(cycleKey, 'true');
+        setSnackbarMsg("Amazing! You've hit 7 days of consistent commitment! Keep the momentum going!");
+        setSnackbarOpen(true);
+      }
       setFormData({
         firstName: userData.firstName || '',
         lastName: userData.lastName || '',
@@ -402,7 +414,7 @@ const Profile = () => {
         {/* Badges System */}
         <Box sx={{ mb: 3 }}>
           <Typography sx={labelSx}>Badges</Typography>
-          <Box sx={{ display: 'flex', gap: 2, pb: 1, borderBottom: '2px solid #fff', minHeight: 50 }}>
+          <Box sx={{ display: 'flex', gap: 2, pb: 1, borderBottom: '2px solid #474747', minHeight: 50 }}>
             {/* Render badges the user HAS */}
             {user.badges.map((badgeName, idx) => {
               const badgeDef = availableBadges.find(b => b.name === badgeName);
@@ -424,7 +436,7 @@ const Profile = () => {
           </Box>
         </Box>
 
-        {/* Goals Section - Weekly first, then 3-month */}
+        {/* Goals Section */}
         <Box sx={{ mb: 3 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
             <Typography sx={{ ...labelSx, mb: 0 }}>Weekly Goal</Typography>
@@ -550,7 +562,7 @@ const Profile = () => {
               const isFuture = dateForCircle.getTime() > today.getTime();
               const isToday = dateForCircle.getTime() === today.getTime();
               // Default border: light grey for future, white for past/now
-              let borderColor = isFuture ? '#eee' : '#a34efe';
+              let borderColor = isFuture ? '#474747' : '#a34efe';
               // If the day is recorded, use purple outline
               if (isRecorded) borderColor = '#a34efe';
               // Ensure today's recorded day is highlighted (purple)
@@ -560,10 +572,16 @@ const Profile = () => {
                 <Box key={index} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 0.5 }}>
                     <Box sx={{ width: 40, height: 40, borderRadius: '50%', border: `2px solid ${borderColor}`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      {isRecorded ? <Box sx={{ width: 22, height: 22, borderRadius: '50%', bgcolor: '#a34efe' }} /> : <Box sx={{ width: 22, height: 22, borderRadius: '50%', bgcolor: 'transparent' }} />}
+                      {isRecorded ? (
+                        <Box sx={{ width: 22, height: 22, borderRadius: '50%', bgcolor: '#a34efe' }} />
+                      ) : !isFuture ? (
+                        <CloseIcon sx={{ color: '#a34efe', fontSize: 18 }} />
+                      ) : (
+                        <Box sx={{ width: 22, height: 22, borderRadius: '50%', bgcolor: 'transparent' }} />
+                      )}
                     </Box>
                   </Box>
-                  <Typography variant="caption" sx={{ color: isFuture ? '#ccc' : '#000', fontWeight: 'bold' }}>
+                  <Typography variant="caption" sx={{ color: '#000', fontWeight: 'bold' }}>
                     {dayNumber}
                   </Typography>
                 </Box>
@@ -629,6 +647,17 @@ const Profile = () => {
           </DialogContent>
         </Dialog>
       )}
+
+      <Snackbar
+        open={snackbarOpen}
+        autoHideDuration={6000}
+        onClose={() => setSnackbarOpen(false)}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert onClose={() => setSnackbarOpen(false)} severity="success" sx={{ width: '100%', bgcolor: '#a34efe', color: '#fff' }}>
+          {snackbarMsg}
+        </Alert>
+      </Snackbar>
     </Box>
   );
 };

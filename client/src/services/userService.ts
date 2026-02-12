@@ -34,6 +34,7 @@ export interface UserProfile {
   lastActiveDate?: string | null;
   profileImage?: string;
   badges: string[];
+  dailyCompletions?: Record<string, number>;
 }
 
 export const fetchBadges = async (): Promise<Badge[]> => {

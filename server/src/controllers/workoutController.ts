@@ -159,6 +159,7 @@ export const updateWorkout = async (req: AuthRequest, res: Response) => {
             }
 
            await updateStreak(userId);
+           await storeDailyCompletion(userId);
         }
     }
     
@@ -230,6 +231,45 @@ const updateStreak = async (userId: string) => {
     await evaluateBadges(userId);
   } catch (err) {
     console.error('✗ Error updating streak:', (err as any).message);
+  }
+};
+
+/** Compute and persist the day's average completion % from all completed workouts. */
+const storeDailyCompletion = async (userId: string) => {
+  try {
+    const today = new Date();
+    const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const endOfDay = new Date(startOfDay.getTime() + 86400000);
+
+    const completedToday = await Workout.find({
+      userId,
+      lastCompletedDate: { $gte: startOfDay, $lt: endOfDay }
+    });
+
+    if (!completedToday.length) return;
+
+    // Per activity: completed=100, partial=50, incomplete/none=0. Average sets → activity score.
+    const activityScores: number[] = [];
+    for (const w of completedToday) {
+      for (const act of w.activities) {
+        if (!act.sets.length) continue;
+        const setScores = act.sets.map(s =>
+          s.status === 'completed' ? 100 : s.status === 'partial' ? 50 : 0
+        );
+        activityScores.push(setScores.reduce((a, b) => a + b, 0) / setScores.length);
+      }
+    }
+
+    const dayPct = activityScores.length
+      ? Math.round(activityScores.reduce((a, b) => a + b, 0) / activityScores.length)
+      : 0;
+
+    const dateKey = startOfDay.toISOString().slice(0, 10); // "YYYY-MM-DD"
+    await User.findByIdAndUpdate(userId, {
+      $set: { [`dailyCompletions.${dateKey}`]: dayPct }
+    });
+  } catch (err) {
+    console.error('✗ Error storing daily completion:', (err as any).message);
   }
 };
 

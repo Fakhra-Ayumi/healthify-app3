@@ -45,42 +45,25 @@ const Milestones = () => {
     loadData();
   }, []);
 
-  // --- Streak Table Data Preparation ---
-  const getStreakData = () => {
+  // --- Weekly Progress Data (past 14 days) ---
+  const getWeeklyProgressData = () => {
     if (!user) return [];
 
-    // Default display window: start 7 days before today
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    const defaultStart = new Date(today);
-    defaultStart.setDate(defaultStart.getDate() - 7);
-    // Use commitmentStartDate when present, otherwise show from 7 days ago
-    const startDate = user.commitmentStartDate
-      ? new Date(user.commitmentStartDate)
-      : defaultStart;
-    const daysToShow = 20;
     const data = [];
+    const completions = user.dailyCompletions ?? {};
 
-    for (let i = 0; i < daysToShow; i++) {
-      const d = new Date(startDate);
-      d.setDate(startDate.getDate() + i);
-      const dateStr = d.toDateString();
-      const isRecorded = user.streakDates?.some(
-        (sd: string) => new Date(sd).toDateString() === dateStr,
-      );
+    for (let i = 13; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(today.getDate() - i);
+      const dateKey = d.toISOString().slice(0, 10);
+      const dayNum = d.getDate();
+      const isToday = i === 0;
+      const pct = completions[dateKey] as number | undefined;
 
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const dDate = new Date(d);
-      dDate.setHours(0, 0, 0, 0);
-
-      // Status: 'recorded', 'missed', 'future'
-      let status = "future";
-      if (dDate <= today) {
-        status = isRecorded ? "recorded" : "missed";
-      }
-
-      data.push({ date: d, dayNum: d.getDate(), status });
+      // undefined means no record for that day
+      data.push({ date: d, dayNum, pct: pct ?? null, isToday });
     }
     return data;
   };
@@ -154,7 +137,7 @@ const Milestones = () => {
     return results;
   };
 
-  const streakData = getStreakData();
+  const weeklyData = getWeeklyProgressData();
   const pieData = getImprovementData();
   // Gradient of purple shades
   const COLORS = ["#a34efe", "#b975fe", "#cf9cfe", "#e5c3fe"];
@@ -190,7 +173,13 @@ const Milestones = () => {
         Milestones
       </Typography>
 
-      {/* Streak Table Section */}
+      {/* Weekly Progress Section */}
+      <Typography
+        variant="h5"
+        sx={{ mb: 1, fontWeight: "bold", color: "#000" }}
+      >
+        Weekly Progress
+      </Typography>
       <Paper
         elevation={3}
         sx={{
@@ -204,21 +193,45 @@ const Milestones = () => {
           borderStyle: "solid",
         }}
       >
-        <Typography variant="h6" sx={{ mb: 2, fontWeight: "bold" }}>
-          Streak Record
-        </Typography>
         <Box sx={{ display: "flex", minWidth: "100%", pb: 1 }}>
-          {streakData.map((day, i) => (
-            <Box
-              key={i}
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                minWidth: 60,
-                mx: 0.5,
-              }}
-            >
+          {weeklyData.map((day, i) => {
+            // Determine circle color and label
+            const isMissed = day.pct === null && !day.isToday;
+            const isLow = day.pct !== null && day.pct < 20;
+
+            let bgColor = "#f5f5f5";
+            let textColor = "#000";
+            let label = "";
+
+            if (day.isToday && day.pct === null) {
+              // Today with no record yet
+              bgColor = "#f5f5f5";
+            } else if (isMissed) {
+              bgColor = "#aaa";
+              textColor = "#fff";
+            } else if (day.pct !== null) {
+              if (isLow) {
+                bgColor = "rgb(239, 83, 80)";
+                textColor = "#fff";
+              } else if (day.pct >= 100) {
+                bgColor = "#c2e4ff";
+              } else {
+                bgColor = "#fff9c4";
+              }
+              label = `${day.pct}%`;
+            }
+
+            return (
+              <Box
+                key={i}
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  minWidth: 60,
+                  mx: 0.5,
+                }}
+              >
                 <Box
                   sx={{
                     width: 44,
@@ -227,52 +240,44 @@ const Milestones = () => {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
-                    bgcolor:
-                      day.status === "recorded"
-                        ? "transparent"
-                        : day.status === "missed"
-                        ? "#aaa"
-                        : "#f5f5f5",
-                    border: day.status === "future" ? "1px dashed #ccc" : "none",
+                    bgcolor: bgColor,
+                    border: day.isToday && day.pct === null ? "1px dashed #ccc" : "none",
                   }}
                 >
-                  {day.status === "recorded" && (
-                    <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center" }}>
-                      <Box sx={{ width: 40, height: 40, borderRadius: "50%", border: "2px solid #a34efe", display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                        <Box sx={{ width: 22, height: 22, borderRadius: '50%', bgcolor: '#a34efe' }} />
-                      </Box>
-                    </Box>
-                  )}
-                  {day.status === "missed" && (
+                  {isMissed ? (
                     <CloseIcon sx={{ color: "#fff", fontSize: 16 }} />
-                  )}
+                  ) : label ? (
+                    <Typography sx={{ fontSize: "0.6rem", fontWeight: "bold", color: textColor, lineHeight: 1 }}>
+                      {label}
+                    </Typography>
+                  ) : null}
                 </Box>
-              <Typography
-                variant="body2"
-                sx={{
-                  mt: 1,
-                  fontWeight: "bold",
-                  color: "#000000",
-                  fontSize: "0.9rem",
-                }}
-              >
-                {day.dayNum}
-              </Typography>
-            </Box>
-          ))}
+                <Typography
+                  variant="body2"
+                  sx={{ mt: 1, fontWeight: "bold", color: "#000", fontSize: "0.9rem" }}
+                >
+                  {`${day.date.getMonth() + 1}/${day.dayNum}`}
+                </Typography>
+              </Box>
+            );
+          })}
         </Box>
       </Paper>
 
-      {/* Tracking Progress Section */}
+      {/* Activity Tracker Section */}
       <Box>
-        <Typography
-          variant="h5"
-          sx={{ mb: 2, fontWeight: "bold", color: "#000" }}
-        >
-          Progress Tracker{" "}
-          {user?.commitmentStartDate
-            ? `Since ${new Date(user.commitmentStartDate).toLocaleDateString()}`
-            : ""}
+        <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "baseline", mb: 0.5 }}>
+          <Typography variant="h5" sx={{ fontWeight: "bold", color: "#000" }}>
+            Activity Tracker
+          </Typography>
+          {user?.commitmentStartDate && (
+            <Typography variant="body2" sx={{ color: "grey" }}>
+              Since {new Date(user.commitmentStartDate).toLocaleDateString()}
+            </Typography>
+          )}
+        </Box>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+          Track how your weight, distance, speed, and time evolve over sessions.
         </Typography>
 
         <Box
@@ -335,12 +340,21 @@ const Milestones = () => {
             );
           })}
         </Box>
+      </Box>
 
-        {pieData.length > 0 && (
+      {/* Improvement Rate Distribution Section */}
+      <Box sx={{ mt: 4 }}>
+        <Typography variant="h5" sx={{ fontWeight: "bold", color: "#000", mb: 0.5 }}>
+          Improvement Rate Distribution
+        </Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+          Compares your week-over-week averages to show where you improved the most.
+        </Typography>
+
+        {pieData.length > 0 ? (
           <Paper
             elevation={2}
             sx={{
-              mt: 4,
               p: 2,
               borderRadius: 2,
               display: "flex",
@@ -352,12 +366,6 @@ const Milestones = () => {
               borderStyle: "solid",
             }}
           >
-            <Typography variant="h6" fontWeight="bold" sx={{ mb: 1 }}>
-              Improvement Rate Distribution
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-              Based on last 2 weeks' progress
-            </Typography>
             <Box sx={{ width: "100%", height: 300 }}>
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
@@ -368,12 +376,11 @@ const Milestones = () => {
                     label={(props) => {
                       const { name, percent, x, y, cx } = props;
                       if (!name || percent === undefined) return "";
-
                       return (
                         <text
                           x={x}
                           y={y}
-                          fill="#000" // This sets the text color to black
+                          fill="#000"
                           textAnchor={x > cx ? "start" : "end"}
                           dominantBaseline="central"
                         >
@@ -407,16 +414,14 @@ const Milestones = () => {
               </ResponsiveContainer>
             </Box>
           </Paper>
-        )}
-
-        {pieData.length === 0 && !loading && (
-          <Paper sx={{ p: 4, mt: 4, textAlign: "center" }}>
+        ) : !loading ? (
+          <Paper sx={{ p: 4, textAlign: "center" }}>
             <Typography color="text.secondary">
               Complete workouts for at least 1 day to see improvement analytics
               for 2 weeks of weight, distance, speed and time.
             </Typography>
           </Paper>
-        )}
+        ) : null}
       </Box>
     </Box>
   );
