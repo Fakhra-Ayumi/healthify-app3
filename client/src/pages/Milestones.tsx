@@ -365,7 +365,7 @@ const Milestones = () => {
                       />
                       <RechartsTooltip
                         isAnimationActive={false}
-                        formatter={(value, name, props) => [
+                        formatter={(value, _name, props) => [
                           `${value} ${props.payload.unit}`,
                           param,
                         ]}
