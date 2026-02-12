@@ -38,11 +38,12 @@ export interface UserProfile {
 }
 
 export const fetchBadges = async (): Promise<Badge[]> => {
-  const response = await axios.get("http://localhost:8000/api/badges");
+  const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000";
+  const response = await axios.get(`${API_BASE}/api/badges`);
   return response.data;
 };
 
-const API_URL = "http://localhost:8000/api/auth/profile";
+const API_URL = `${import.meta.env.VITE_API_URL || "http://localhost:8000"}/api/auth/profile`;
 
 const getAuthHeader = () => {
   const token = localStorage.getItem("token");

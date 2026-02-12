@@ -1,7 +1,7 @@
 import axios from "axios";
 import type { Workout } from "../types/workout";
 
-const API_URL = "http://localhost:8000/api/workouts";
+const API_URL = `${import.meta.env.VITE_API_URL || "http://localhost:8000"}/api/workouts`;
 
 // Helper to get auth header
 const getAuthHeader = () => {

@@ -28,8 +28,9 @@ const Login = () => {
     e.preventDefault();
 
     try {
+      const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000";
       const response = await axios.post(
-        "http://localhost:8000/api/auth/login",
+        `${API_BASE}/api/auth/login`,
         credentials,
       );
       const { token, user } = response.data;

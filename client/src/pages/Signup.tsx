@@ -30,8 +30,9 @@ const Signup = () => {
   const handleSubmit = async (event: React.SyntheticEvent) => {
     event.preventDefault();
     try {
+      const API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000";
       const response = await axios.post(
-        "http://localhost:8000/api/auth/register",
+        `${API_BASE}/api/auth/register`,
         formData,
       );
       localStorage.setItem("token", response.data.token);
@@ -67,29 +68,29 @@ const Signup = () => {
                 onChange={handleChange}
                 variant="filled"
                 sx={{
-                    "& .MuiFilledInput-root": {
+                  "& .MuiFilledInput-root": {
+                    backgroundColor: "#000",
+                    color: "#fff",
+                    "&:hover": {
+                      backgroundColor: "#111",
+                    },
+                    "&.Mui-focused": {
                       backgroundColor: "#000",
-                      color: "#fff",
-                      "&:hover": {
-                        backgroundColor: "#111",
-                      },
-                      "&.Mui-focused": {
-                        backgroundColor: "#000",
-                      },
                     },
-                    "& .MuiInputLabel-root": {
-                      color: "#ccc",
-                    },
-                    "& .MuiInputLabel-root.Mui-focused": {
-                      color: "#fff",
-                    },
-                    "& .MuiFilledInput-underline:before": {
-                      borderBottomColor: "#000",
-                    },
-                    "& .MuiFilledInput-underline:after": {
-                      borderBottomColor: "#ccc",
-                    },
-                  }}
+                  },
+                  "& .MuiInputLabel-root": {
+                    color: "#ccc",
+                  },
+                  "& .MuiInputLabel-root.Mui-focused": {
+                    color: "#fff",
+                  },
+                  "& .MuiFilledInput-underline:before": {
+                    borderBottomColor: "#000",
+                  },
+                  "& .MuiFilledInput-underline:after": {
+                    borderBottomColor: "#ccc",
+                  },
+                }}
               />
             </Grid>
             <Grid size={{ xs: 6 }}>
@@ -100,29 +101,29 @@ const Signup = () => {
                 onChange={handleChange}
                 variant="filled"
                 sx={{
-                    "& .MuiFilledInput-root": {
+                  "& .MuiFilledInput-root": {
+                    backgroundColor: "#000",
+                    color: "#fff",
+                    "&:hover": {
+                      backgroundColor: "#111",
+                    },
+                    "&.Mui-focused": {
                       backgroundColor: "#000",
-                      color: "#fff",
-                      "&:hover": {
-                        backgroundColor: "#111",
-                      },
-                      "&.Mui-focused": {
-                        backgroundColor: "#000",
-                      },
                     },
-                    "& .MuiInputLabel-root": {
-                      color: "#ccc",
-                    },
-                    "& .MuiInputLabel-root.Mui-focused": {
-                      color: "#fff",
-                    },
-                    "& .MuiFilledInput-underline:before": {
-                      borderBottomColor: "#000",
-                    },
-                    "& .MuiFilledInput-underline:after": {
-                      borderBottomColor: "#ccc",
-                    },
-                  }}
+                  },
+                  "& .MuiInputLabel-root": {
+                    color: "#ccc",
+                  },
+                  "& .MuiInputLabel-root.Mui-focused": {
+                    color: "#fff",
+                  },
+                  "& .MuiFilledInput-underline:before": {
+                    borderBottomColor: "#000",
+                  },
+                  "& .MuiFilledInput-underline:after": {
+                    borderBottomColor: "#ccc",
+                  },
+                }}
               />
             </Grid>
             <Grid size={12}>
@@ -133,29 +134,29 @@ const Signup = () => {
                 onChange={handleChange}
                 variant="filled"
                 sx={{
-                    "& .MuiFilledInput-root": {
+                  "& .MuiFilledInput-root": {
+                    backgroundColor: "#000",
+                    color: "#fff",
+                    "&:hover": {
+                      backgroundColor: "#111",
+                    },
+                    "&.Mui-focused": {
                       backgroundColor: "#000",
-                      color: "#fff",
-                      "&:hover": {
-                        backgroundColor: "#111",
-                      },
-                      "&.Mui-focused": {
-                        backgroundColor: "#000",
-                      },
                     },
-                    "& .MuiInputLabel-root": {
-                      color: "#ccc",
-                    },
-                    "& .MuiInputLabel-root.Mui-focused": {
-                      color: "#fff",
-                    },
-                    "& .MuiFilledInput-underline:before": {
-                      borderBottomColor: "#000",
-                    },
-                    "& .MuiFilledInput-underline:after": {
-                      borderBottomColor: "#ccc",
-                    },
-                  }}
+                  },
+                  "& .MuiInputLabel-root": {
+                    color: "#ccc",
+                  },
+                  "& .MuiInputLabel-root.Mui-focused": {
+                    color: "#fff",
+                  },
+                  "& .MuiFilledInput-underline:before": {
+                    borderBottomColor: "#000",
+                  },
+                  "& .MuiFilledInput-underline:after": {
+                    borderBottomColor: "#ccc",
+                  },
+                }}
               />
             </Grid>
             <Grid size={12}>
@@ -167,29 +168,29 @@ const Signup = () => {
                 onChange={handleChange}
                 variant="filled"
                 sx={{
-                    "& .MuiFilledInput-root": {
+                  "& .MuiFilledInput-root": {
+                    backgroundColor: "#000",
+                    color: "#fff",
+                    "&:hover": {
+                      backgroundColor: "#111",
+                    },
+                    "&.Mui-focused": {
                       backgroundColor: "#000",
-                      color: "#fff",
-                      "&:hover": {
-                        backgroundColor: "#111",
-                      },
-                      "&.Mui-focused": {
-                        backgroundColor: "#000",
-                      },
                     },
-                    "& .MuiInputLabel-root": {
-                      color: "#ccc",
-                    },
-                    "& .MuiInputLabel-root.Mui-focused": {
-                      color: "#fff",
-                    },
-                    "& .MuiFilledInput-underline:before": {
-                      borderBottomColor: "#000",
-                    },
-                    "& .MuiFilledInput-underline:after": {
-                      borderBottomColor: "#ccc",
-                    },
-                  }}
+                  },
+                  "& .MuiInputLabel-root": {
+                    color: "#ccc",
+                  },
+                  "& .MuiInputLabel-root.Mui-focused": {
+                    color: "#fff",
+                  },
+                  "& .MuiFilledInput-underline:before": {
+                    borderBottomColor: "#000",
+                  },
+                  "& .MuiFilledInput-underline:after": {
+                    borderBottomColor: "#ccc",
+                  },
+                }}
               />
             </Grid>
             <Grid size={12}>
@@ -201,29 +202,29 @@ const Signup = () => {
                 onChange={handleChange}
                 variant="filled"
                 sx={{
-                    "& .MuiFilledInput-root": {
+                  "& .MuiFilledInput-root": {
+                    backgroundColor: "#000",
+                    color: "#fff",
+                    "&:hover": {
+                      backgroundColor: "#111",
+                    },
+                    "&.Mui-focused": {
                       backgroundColor: "#000",
-                      color: "#fff",
-                      "&:hover": {
-                        backgroundColor: "#111",
-                      },
-                      "&.Mui-focused": {
-                        backgroundColor: "#000",
-                      },
                     },
-                    "& .MuiInputLabel-root": {
-                      color: "#ccc",
-                    },
-                    "& .MuiInputLabel-root.Mui-focused": {
-                      color: "#fff",
-                    },
-                    "& .MuiFilledInput-underline:before": {
-                      borderBottomColor: "#000",
-                    },
-                    "& .MuiFilledInput-underline:after": {
-                      borderBottomColor: "#ccc",
-                    },
-                  }}
+                  },
+                  "& .MuiInputLabel-root": {
+                    color: "#ccc",
+                  },
+                  "& .MuiInputLabel-root.Mui-focused": {
+                    color: "#fff",
+                  },
+                  "& .MuiFilledInput-underline:before": {
+                    borderBottomColor: "#000",
+                  },
+                  "& .MuiFilledInput-underline:after": {
+                    borderBottomColor: "#ccc",
+                  },
+                }}
               />
             </Grid>
             <Grid size={12}>
@@ -235,29 +236,29 @@ const Signup = () => {
                 onChange={handleChange}
                 variant="filled"
                 sx={{
-                    "& .MuiFilledInput-root": {
+                  "& .MuiFilledInput-root": {
+                    backgroundColor: "#000",
+                    color: "#fff",
+                    "&:hover": {
+                      backgroundColor: "#111",
+                    },
+                    "&.Mui-focused": {
                       backgroundColor: "#000",
-                      color: "#fff",
-                      "&:hover": {
-                        backgroundColor: "#111",
-                      },
-                      "&.Mui-focused": {
-                        backgroundColor: "#000",
-                      },
                     },
-                    "& .MuiInputLabel-root": {
-                      color: "#ccc",
-                    },
-                    "& .MuiInputLabel-root.Mui-focused": {
-                      color: "#fff",
-                    },
-                    "& .MuiFilledInput-underline:before": {
-                      borderBottomColor: "#000",
-                    },
-                    "& .MuiFilledInput-underline:after": {
-                      borderBottomColor: "#ccc",
-                    },
-                  }}
+                  },
+                  "& .MuiInputLabel-root": {
+                    color: "#ccc",
+                  },
+                  "& .MuiInputLabel-root.Mui-focused": {
+                    color: "#fff",
+                  },
+                  "& .MuiFilledInput-underline:before": {
+                    borderBottomColor: "#000",
+                  },
+                  "& .MuiFilledInput-underline:after": {
+                    borderBottomColor: "#ccc",
+                  },
+                }}
               />
             </Grid>
             <Grid size={12}>
@@ -269,29 +270,29 @@ const Signup = () => {
                 onChange={handleChange}
                 variant="filled"
                 sx={{
-                    "& .MuiFilledInput-root": {
+                  "& .MuiFilledInput-root": {
+                    backgroundColor: "#000",
+                    color: "#fff",
+                    "&:hover": {
+                      backgroundColor: "#111",
+                    },
+                    "&.Mui-focused": {
                       backgroundColor: "#000",
-                      color: "#fff",
-                      "&:hover": {
-                        backgroundColor: "#111",
-                      },
-                      "&.Mui-focused": {
-                        backgroundColor: "#000",
-                      },
                     },
-                    "& .MuiInputLabel-root": {
-                      color: "#ccc",
-                    },
-                    "& .MuiInputLabel-root.Mui-focused": {
-                      color: "#fff",
-                    },
-                    "& .MuiFilledInput-underline:before": {
-                      borderBottomColor: "#000",
-                    },
-                    "& .MuiFilledInput-underline:after": {
-                      borderBottomColor: "#ccc",
-                    },
-                  }}
+                  },
+                  "& .MuiInputLabel-root": {
+                    color: "#ccc",
+                  },
+                  "& .MuiInputLabel-root.Mui-focused": {
+                    color: "#fff",
+                  },
+                  "& .MuiFilledInput-underline:before": {
+                    borderBottomColor: "#000",
+                  },
+                  "& .MuiFilledInput-underline:after": {
+                    borderBottomColor: "#ccc",
+                  },
+                }}
               />
             </Grid>
           </Grid>

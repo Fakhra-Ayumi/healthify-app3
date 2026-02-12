@@ -6,6 +6,10 @@
     "esModuleInterop": true,
     "jsx": "react-jsx",
     "strict": false,
-    "skipLibCheck": true
-  }
+    "skipLibCheck": true,
+    "outDir": "dist",
+    "rootDir": ".",
+    "types": ["mocha", "node"]
+  },
+  "include": ["src", "test"]
 }
