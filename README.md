@@ -1,4 +1,5 @@
 # Healthify
+## Project Overview
 
 A full-stack fitness tracking app built as a capstone project for the McGill Coding Bootcamp. Healthify is a simple fitness record-keeping app, built to create workout routines instantly, and track achievements visually.
 
@@ -75,7 +76,7 @@ This project started from  my brother's wish to have an app that would take less
 
 The client runs on `http://localhost:5173` and the server runs on `http://localhost:8000`.
 
-## Using the App
+## Usage
 
 1. **Sign Up** — Create an account on the signup page
 2. **Set Up Profile** — Add your name, purpose, and set your weekly/3-month goals in the Profile tab.
@@ -84,7 +85,7 @@ The client runs on `http://localhost:5173` and the server runs on `http://localh
 5. **Check Milestones** — Visit the Milestones tab to see your streak record and progress charts (the progress will only show up once you hit the "Done for Today" button).
 6. **Earn Badges** — Lock in goals, complete them, and maintain streaks to unlock Bronze/Silver/Gold badges.
 
-## Techstack
+## Technologies Used
 
 ### Frontend
 
@@ -102,7 +103,7 @@ The client runs on `http://localhost:5173` and the server runs on `http://localh
 - Express
 - TypeScript
 - MongoDB with Mongoose
-- JSON Web Tokens (JWT)
+- JSON Web Tokens
 - bcryptjs
 - express-validator
 

@@ -69,33 +69,40 @@ const Milestones = () => {
   };
 
   // --- Line Chart Data Preparation ---
-  const getLineChartData = (parameterType: string) => {
-    // Filter history by parameter
+  const getLineChartData = (parameterType: string, targetUnit: string) => {
+    const conversionFactors: Record<string, Record<string, number>> = {
+      Weight: { kg: 1, g: 0.001, lb: 0.453592 },
+      Distance: { km: 1, m: 0.001, mi: 1.60934 },
+      Speed: { "km/h": 1, "m/s": 3.6, mph: 1.60934 },
+      Time: { min: 1, s: 1 / 60, h: 60 },
+    };
+
     const relevantLogs = history.filter((h) => h.parameter === parameterType);
     if (!relevantLogs.length) return [];
 
-    // Group by date string
-    const grouped: Record<string, number[]> = {};
+    const grouped: Record<string, number> = {};
     const weekMap: Record<string, Date> = {};
 
     relevantLogs.forEach((log) => {
       const d = new Date(log.date);
       const label = `${d.getMonth() + 1}/${d.getDate()}`;
       if (!grouped[label]) {
-        grouped[label] = [];
+        grouped[label] = 0;
         weekMap[label] = d;
       }
-      grouped[label].push(log.value);
+      const factor =
+        conversionFactors[parameterType]?.[log.unit.toLowerCase()] ?? 1;
+      grouped[label] += log.value * factor;
     });
 
-    // Sort by date key
     const sortedLabels = Object.keys(grouped).sort(
       (a, b) => weekMap[a].getTime() - weekMap[b].getTime(),
     );
 
     return sortedLabels.map((label) => ({
       name: label,
-      value: grouped[label].reduce((a, b) => a + b, 0) / grouped[label].length, // Average per day
+      value: parseFloat(grouped[label].toFixed(2)),
+      unit: targetUnit,
     }));
   };
 
@@ -302,7 +309,8 @@ const Milestones = () => {
           )}
         </Box>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-          Track how your weight, distance, speed, and time evolve over sessions.
+          Daily sum of your weight, distance, speed, and time from routines you
+          have completed.
         </Typography>
 
         <Box
@@ -312,8 +320,13 @@ const Milestones = () => {
             gap: 3,
           }}
         >
-          {["Weight", "Distance", "Speed", "Time"].map((param) => {
-            const data = getLineChartData(param);
+          {Object.entries({
+            Weight: "kg",
+            Distance: "km",
+            Speed: "km/h",
+            Time: "min",
+          }).map(([param, unit]) => {
+            const data = getLineChartData(param, unit);
             if (data.length === 0) return null;
 
             return (
@@ -348,8 +361,15 @@ const Milestones = () => {
                       <YAxis
                         tick={{ fill: "#000", fontWeight: "bold" }}
                         stroke="#000"
+                        tickFormatter={(value) => `${value} ${unit}`}
                       />
-                      <RechartsTooltip isAnimationActive={false} />
+                      <RechartsTooltip
+                        isAnimationActive={false}
+                        formatter={(value, name, props) => [
+                          `${value} ${props.payload.unit}`,
+                          param,
+                        ]}
+                      />
                       <Line
                         type="monotone"
                         dataKey="value"
@@ -376,7 +396,8 @@ const Milestones = () => {
           Improvement Rate Distribution
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-          Compares your week-over-week averages to show where you improved the most.
+          Compares your week-over-week averages to show where you improved the
+          most.
         </Typography>
 
         {pieData.length > 0 ? (

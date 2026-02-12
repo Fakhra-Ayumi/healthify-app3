@@ -1,16 +1,22 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Box, TextField, Button, Typography, Container, Link, Paper } from '@mui/material';
-import Grid from '@mui/material/Grid';
-import axios from 'axios';
-
-
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  Box,
+  TextField,
+  Button,
+  Typography,
+  Container,
+  Link,
+  Paper,
+} from "@mui/material";
+import Grid from "@mui/material/Grid";
+import axios from "axios";
 
 const Login = () => {
   const navigate = useNavigate();
   const [credentials, setCredentials] = useState({
-    username: '',
-    password: '',
+    username: "",
+    password: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -22,19 +28,21 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const response = await axios.post('http://localhost:8000/api/auth/login', credentials);
+      const response = await axios.post(
+        "http://localhost:8000/api/auth/login",
+        credentials,
+      );
       const { token, user } = response.data;
-      
+
       /* Store the JWT in localStorage to keep the user logged in across refreshes. */
-      localStorage.setItem('token', token);
-      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem("token", token);
+      localStorage.setItem("user", JSON.stringify(user));
 
       alert(`Welcome back, ${user.username}!`);
-      navigate('/app');
-      
+      navigate("/app");
     } catch (err) {
       /* Error handling: manage the unknown catch value safely. */
-      let message = 'Login failed. Please check your credentials.';
+      let message = "Login failed. Please check your credentials.";
       if (axios.isAxiosError(err)) {
         message = err.response?.data?.message || message;
       } else if (err instanceof Error) {
@@ -46,12 +54,37 @@ const Login = () => {
 
   return (
     <Container maxWidth="xs">
-      <Box sx={{ mt: 10, display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
-        <Paper elevation={0} sx={{ p: 4, width: '100%', bgcolor: 'background.paper', borderRadius: 4 }}>
-          <Typography variant="h4" align="center" color="textPrimary" sx={{ mb: 1, fontWeight: 'bold' }}>
+      <Box
+        sx={{
+          mt: 10,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+        <Paper
+          elevation={0}
+          sx={{
+            p: 4,
+            width: "100%",
+            bgcolor: "background.paper",
+            borderRadius: 4,
+          }}
+        >
+          <Typography
+            variant="h4"
+            align="center"
+            color="textPrimary"
+            sx={{ mb: 1, fontWeight: "bold" }}
+          >
             Healthify
           </Typography>
-          <Typography variant="body2" align="center" color="textSecondary" sx={{ mb: 4 }}>
+          <Typography
+            variant="body2"
+            align="center"
+            color="textSecondary"
+            sx={{ mb: 4 }}
+          >
             Log in to continue your streak!
           </Typography>
 
@@ -132,25 +165,32 @@ const Login = () => {
               type="submit"
               fullWidth
               variant="contained"
-              sx={{ 
-                mt: 4, 
-                py: 1.5, 
-                borderRadius: 8, 
-                bgcolor: '#a34efe', 
-                color: '#000000',
-                fontWeight: 'bold',
-                boxShadow: 'none',
-                '&:hover': { bgcolor: '#e0c6fe' }
+              sx={{
+                mt: 4,
+                py: 1.5,
+                borderRadius: 8,
+                bgcolor: "#a34efe",
+                color: "#000000",
+                fontWeight: "bold",
+                boxShadow: "none",
+                "&:hover": { bgcolor: "#e0c6fe" },
               }}
             >
               Log In
             </Button>
           </form>
 
-          <Box sx={{ mt: 3, textAlign: 'center' }}>
+          <Box sx={{ mt: 3, textAlign: "center" }}>
             <Typography variant="body2">
-              Don't have an account?{' '}
-              <Link href="/signup" sx={{ fontWeight: 'bold', textDecoration: 'none', color: '#a34efe' }}>
+              Don't have an account?{" "}
+              <Link
+                href="/signup"
+                sx={{
+                  fontWeight: "bold",
+                  textDecoration: "none",
+                  color: "#a34efe",
+                }}
+              >
                 Join Healthify
               </Link>
             </Typography>

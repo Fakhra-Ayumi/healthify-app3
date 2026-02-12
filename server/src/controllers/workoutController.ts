@@ -142,7 +142,10 @@ export const updateWorkout = async (req: AuthRequest, res: Response) => {
           if (workout.activities && workout.activities.length > 0) {
             workout.activities.forEach((activity) => {
               activity.sets.forEach((set) => {
-                if (set.value > 0) {
+                if (
+                  set.value > 0 &&
+                  (set.status === "completed" || set.status === "partial")
+                ) {
                   logsToInsert.push({
                     userId,
                     date: timestamp,
@@ -210,7 +213,7 @@ const updateStreak = async (userId: string) => {
         user.lastActiveDate = todayDateOnly;
       } else {
         // Missed days, reset current streak count for consecutive tracking
-        // (But we still record the date in streakDates for the 20-day grid)
+        // (But still record the date in streakDates for the 20-day grid)
         user.currentStreak = 1;
         user.lastActiveDate = todayDateOnly;
       }
