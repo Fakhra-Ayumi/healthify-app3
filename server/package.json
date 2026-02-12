@@ -4,7 +4,9 @@
   "type": "module",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "mocha",
+    "test:unit": "mocha 'test/unit/**/*.test.ts'",
+    "test:integration": "mocha 'test/integration/**/*.test.ts'",
     "dev": "tsx watch src/index.ts",
     "start": "node index.ts"
   },

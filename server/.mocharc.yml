@@ -1,0 +1,6 @@
+node-option:
+  - import=tsx
+file:
+  - test/hooks.ts
+spec: "test/**/*.test.ts"
+timeout: 30000
