@@ -31,7 +31,7 @@ This project started from  my brother's wish to have an app that would take less
 - MongoDB (local instance or MongoDB Atlas)
 - npm
 
-### Setup
+### Setup to Run Locally
 
 1. Clone the repo:
 
