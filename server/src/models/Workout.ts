@@ -4,6 +4,7 @@ export interface IWorkout extends Document {
   userId: Types.ObjectId;
   day: string;
   title: string;
+  isSpecial?: boolean;
   lastCompletedDate?: Date;
   lastResetDate?: Date;
   activities: {
@@ -36,6 +37,7 @@ const WorkoutSchema = new Schema<IWorkout>(
     userId: { type: Schema.Types.ObjectId, ref: "User", required: true },
     day: { type: String, required: true },
     title: { type: String, required: true },
+    isSpecial: { type: Boolean, default: false },
     lastCompletedDate: { type: Date, default: null },
     lastResetDate: { type: Date, default: null },
 

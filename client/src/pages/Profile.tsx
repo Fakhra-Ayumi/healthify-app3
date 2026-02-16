@@ -791,24 +791,24 @@ const Profile = () => {
         open={open}
         onClose={handleClose}
         PaperProps={{
-          sx: { bgcolor: "#a34efe", border: "2px solid #000", borderRadius: 3 },
+          sx: { bgcolor: "#e0c6fe", border: "2px solid #000", borderRadius: 3 },
         }}
       >
-        <DialogTitle sx={{ color: "#fff" }}>Confirm Goal Lock-in</DialogTitle>
+        <DialogTitle sx={{ color: "#000" }}>Confirm Goal Lock-in</DialogTitle>
         <DialogContent>
-          <DialogContentText sx={{ color: "#fff" }}>
+          <DialogContentText sx={{ color: "#000" }}>
             Are you sure you want to lock in this goal? You won't be able to
             edit it after locking it in.
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose} sx={{ color: "#fff" }}>
-            Keep Editing
+          <Button onClick={handleClose} sx={{ color: "#000" }}>
+            Cancel
           </Button>
           <Button
             onClick={handleConfirmLockIn}
             autoFocus
-            sx={{ color: "#fff" }}
+            sx={{ color: "#000", fontWeight: "bold" }}
           >
             Lock In
           </Button>
@@ -819,12 +819,12 @@ const Profile = () => {
         open={logoutDialogOpen}
         onClose={() => setLogoutDialogOpen(false)}
         PaperProps={{
-          sx: { bgcolor: "#000", border: "2px solid #a34efe", borderRadius: 3 },
+          sx: { bgcolor: "#e0c6fe", border: "2px solid #000", borderRadius: 3 },
         }}
       >
-        <DialogTitle sx={{ color: "#fff" }}>Logout</DialogTitle>
+        <DialogTitle sx={{ color: "#000" }}>Logout</DialogTitle>
         <DialogContent>
-          <DialogContentText sx={{ color: "#fff" }}>
+          <DialogContentText sx={{ color: "#000" }}>
             Have you marked your menu as complete? This will update your record.
             Make sure to do so before logging out!
           </DialogContentText>
@@ -832,11 +832,15 @@ const Profile = () => {
         <DialogActions>
           <Button
             onClick={() => setLogoutDialogOpen(false)}
-            sx={{ color: "#fff" }}
+            sx={{ color: "#000" }}
           >
             Cancel
           </Button>
-          <Button onClick={handleLogout} autoFocus sx={{ color: "#fff" }}>
+          <Button
+            onClick={handleLogout}
+            autoFocus
+            sx={{ color: "#000", fontWeight: "bold" }}
+          >
             Proceed
           </Button>
         </DialogActions>
@@ -848,13 +852,13 @@ const Profile = () => {
           onClose={() => setNewBadge(null)}
           PaperProps={{
             sx: {
-              bgcolor: "#a34efe",
+              bgcolor: "#e0c6fe",
               border: "2px solid #000",
               borderRadius: 3,
             },
           }}
         >
-          <DialogTitle sx={{ color: "#fff" }}>New Badge Earned!</DialogTitle>
+          <DialogTitle sx={{ color: "#000" }}>New Badge Earned!</DialogTitle>
           <IconButton
             aria-label="close"
             onClick={() => setNewBadge(null)}
@@ -862,17 +866,17 @@ const Profile = () => {
               position: "absolute",
               right: 8,
               top: 8,
-              color: "#fff",
+              color: "#000",
             }}
           >
             <CloseIcon />
           </IconButton>
           <DialogContent sx={{ textAlign: "center" }}>
-            <Typography variant="h6" sx={{ color: "#fff" }}>
+            <Typography variant="h6" sx={{ color: "#000" }}>
               {newBadge.name}
             </Typography>
             <Box sx={{ my: 2 }}>{getBadgeIcon(newBadge)}</Box>
-            <DialogContentText sx={{ color: "#fff" }}>
+            <DialogContentText sx={{ color: "#000" }}>
               {newBadge.description}
             </DialogContentText>
           </DialogContent>

@@ -7,9 +7,12 @@ export const getWorkoutHistory = async (req: AuthRequest, res: Response) => {
     const userId = req.user?.userId;
     const days = parseInt(req.query.days as string) || 14;
 
+    // Normalize to full-day boundaries to avoid missing edge-of-day records
     const endDate = new Date();
+    endDate.setHours(23, 59, 59, 999);
     const startDate = new Date();
-    startDate.setDate(endDate.getDate() - days);
+    startDate.setDate(startDate.getDate() - days);
+    startDate.setHours(0, 0, 0, 0);
 
     const logs = await WorkoutLog.find({
       userId,

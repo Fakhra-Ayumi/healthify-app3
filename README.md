@@ -74,7 +74,7 @@ This project started from  my brother's wish to have an app that would take less
    npm run dev
    ```
 
-The client runs on `http://localhost:5173` and the server runs on `http://localhost:8000`.
+The client runs on `https://healthify-app2-frontend.onrender.com/` or `http://localhost:5173` and the server runs on `https://healthify-app2.onrender.com` or `http://localhost:8000`.
 
 ## Usage
 
@@ -129,9 +129,8 @@ The tests use an in-memory MongoDB instance; there is no need for a separate dat
 ## Future Improvements
 
 - **App Logo** — Removing the background of the app logo currently displayed in the browser tab
-- **Weekly Progress Order** - Flipping order of displaying the weekly progress from recent to the oldest
+- **Activity Tracker** - Accurately track user's activities and improvements by displaying them separately for each activity and a dropdown menu to select the activity of interest in the Milestones page
 - **Customized Badges** - Replacing template badges with customized ones that better represent their description and fit the app's theme and design
 - **Rest Timer** — Built-in countdown timer between sets
 - **Light/Dark Mode** — Dark and light theme option and a better way to apply the theme colors to have stronger brand identity and a more cohesive design
-- **Selective Display** - Giving users the option to display their preferred parameters to track and show in the Milestones page
-- **Calendar View** — Monthly calendar view replacing the weekly progress bar in Milestones page for a better visualization of the progress
+- **Calendar Display** — Monthly calendar view replacing the weekly progress bar in Milestones page for a better visualization of the progress

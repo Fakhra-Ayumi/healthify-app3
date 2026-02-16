@@ -259,12 +259,12 @@ const MenuCard: React.FC<MenuCardProps> = ({
         open={doneDialogOpen}
         onClose={() => setDoneDialogOpen(false)}
         PaperProps={{
-          sx: { bgcolor: "#a34efe", border: "2px solid #000", borderRadius: 3 },
+          sx: { bgcolor: "#e0c6fe", border: "2px solid #000", borderRadius: 3 },
         }}
       >
-        <DialogTitle sx={{ color: "#fff" }}>Confirm Completion</DialogTitle>
+        <DialogTitle sx={{ color: "#000" }}>Confirm Completion</DialogTitle>
         <DialogContent>
-          <DialogContentText sx={{ color: "#fff" }}>
+          <DialogContentText sx={{ color: "#000" }}>
             After marking Done, you will not be able to edit the status of the
             activities. Are you sure you have recorded everything?
           </DialogContentText>
@@ -272,7 +272,7 @@ const MenuCard: React.FC<MenuCardProps> = ({
         <DialogActions>
           <Button
             onClick={() => setDoneDialogOpen(false)}
-            sx={{ color: "#fff" }}
+            sx={{ color: "#000" }}
           >
             Cancel
           </Button>
@@ -282,9 +282,9 @@ const MenuCard: React.FC<MenuCardProps> = ({
               onDoneForToday();
             }}
             autoFocus
-            sx={{ color: "#fff" }}
+            sx={{ color: "#000", fontWeight: "bold" }}
           >
-            Yes, Done
+            Confirm
           </Button>
         </DialogActions>
       </Dialog>

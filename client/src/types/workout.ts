@@ -35,6 +35,7 @@ export interface Workout {
   userId?: string;
   day: string;
   title: string;
+  isSpecial?: boolean;
   lastCompletedDate?: string;
   lastResetDate?: string;
   activities: Activity[];

@@ -45,7 +45,7 @@ const Milestones = () => {
     loadData();
   }, []);
 
-  // --- Weekly Progress Data (past 14 days) ---
+  // --- Weekly Progress Data (past 14 days, most recent first) ---
   const getWeeklyProgressData = () => {
     if (!user) return [];
 
@@ -54,56 +54,60 @@ const Milestones = () => {
     const data = [];
     const completions = user.dailyCompletions ?? {};
 
-    for (let i = 13; i >= 0; i--) {
+    for (let i = 0; i <= 13; i++) {
       const d = new Date(today);
       d.setDate(today.getDate() - i);
       const dateKey = d.toISOString().slice(0, 10);
       const dayNum = d.getDate();
       const isToday = i === 0;
       const pct = completions[dateKey] as number | undefined;
-      // undefined for no record for that day
 
       data.push({ date: d, dayNum, pct: pct ?? null, isToday });
     }
     return data;
   };
 
-  // --- Line Chart Data Preparation ---
+  // --- Line Chart Data: past 14 days with daily sums per parameter ---
   const getLineChartData = (parameterType: string, targetUnit: string) => {
     const conversionFactors: Record<string, Record<string, number>> = {
       Weight: { kg: 1, g: 0.001, lb: 0.453592 },
       Distance: { km: 1, m: 0.001, mi: 1.60934 },
       Speed: { "km/h": 1, "m/s": 3.6, mph: 1.60934 },
-      Time: { min: 1, s: 1 / 60, h: 60 },
+      Time: { h: 1, min: 1 / 60, s: 1 / 3600 },
     };
 
     const relevantLogs = history.filter((h) => h.parameter === parameterType);
     if (!relevantLogs.length) return [];
 
-    const grouped: Record<string, number> = {};
-    const weekMap: Record<string, Date> = {};
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-    relevantLogs.forEach((log) => {
-      const d = new Date(log.date);
+    // One data point per day for the past 14 days (oldest → newest)
+    const data = [];
+    for (let i = 13; i >= 0; i--) {
+      const d = new Date(today);
+      d.setDate(today.getDate() - i);
+      const dateStr = d.toISOString().slice(0, 10);
       const label = `${d.getMonth() + 1}/${d.getDate()}`;
-      if (!grouped[label]) {
-        grouped[label] = 0;
-        weekMap[label] = d;
-      }
-      const factor =
-        conversionFactors[parameterType]?.[log.unit.toLowerCase()] ?? 1;
-      grouped[label] += log.value * factor;
-    });
 
-    const sortedLabels = Object.keys(grouped).sort(
-      (a, b) => weekMap[a].getTime() - weekMap[b].getTime(),
-    );
+      let total = 0;
+      relevantLogs.forEach((log) => {
+        const logDate = new Date(log.date).toISOString().slice(0, 10);
+        if (logDate === dateStr) {
+          const factor =
+            conversionFactors[parameterType]?.[log.unit.toLowerCase()] ?? 1;
+          total += log.value * factor;
+        }
+      });
 
-    return sortedLabels.map((label) => ({
-      name: label,
-      value: parseFloat(grouped[label].toFixed(2)),
-      unit: targetUnit,
-    }));
+      data.push({
+        name: label,
+        value: parseFloat(total.toFixed(2)),
+        unit: targetUnit,
+      });
+    }
+
+    return data;
   };
 
   // --- Pie Chart Data Preparation ---
@@ -203,7 +207,7 @@ const Milestones = () => {
           borderStyle: "solid",
         }}
       >
-        <Box sx={{ display: "flex", minWidth: "100%", pb: 1 }}>
+        <Box sx={{ display: "flex", minWidth: "100%", pb: 0 }}>
           {weeklyData.map((day, i) => {
             // Determine circle color and label
             const isMissed = day.pct === null && !day.isToday;
@@ -324,7 +328,7 @@ const Milestones = () => {
             Weight: "kg",
             Distance: "km",
             Speed: "km/h",
-            Time: "min",
+            Time: "h",
           }).map(([param, unit]) => {
             const data = getLineChartData(param, unit);
             if (data.length === 0) return null;

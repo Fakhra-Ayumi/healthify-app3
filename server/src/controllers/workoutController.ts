@@ -73,8 +73,23 @@ export const getWorkouts = async (req: AuthRequest, res: Response) => {
 
 export const createWorkout = async (req: AuthRequest, res: Response) => {
   try {
-    const { day, title, activities } = req.body;
+    const { day, title, activities, isSpecial } = req.body;
     const userId = req.user?.userId;
+
+    // Enforce 7 daily-menu limit (special menus are unlimited)
+    // Also treat records with day === "Special" as special to cover legacy data
+    if (!isSpecial) {
+      const dailyCount = await Workout.countDocuments({
+        userId,
+        isSpecial: { $ne: true },
+        day: { $ne: "Special" },
+      });
+      if (dailyCount >= 7) {
+        return res.status(400).json({
+          message: "You can only create up to 7 daily menus (Monday–Sunday). Use a Special Menu instead.",
+        });
+      }
+    }
 
     // Clean activities: remove client-side 'id' field before saving
     const cleanedActivities =
@@ -87,6 +102,7 @@ export const createWorkout = async (req: AuthRequest, res: Response) => {
       userId,
       day,
       title,
+      isSpecial: !!isSpecial,
       activities: cleanedActivities,
     });
     const savedWorkout = await newWorkout.save();
@@ -100,7 +116,7 @@ export const createWorkout = async (req: AuthRequest, res: Response) => {
 export const updateWorkout = async (req: AuthRequest, res: Response) => {
   try {
     const { id } = req.params;
-    const { day, title, activities, lastCompletedDate } = req.body;
+    const { day, title, activities, lastCompletedDate, isSpecial } = req.body;
     const userId = req.user?.userId;
 
     // Clean activities: remove client-side 'id' field before saving in bulk
@@ -121,7 +137,7 @@ export const updateWorkout = async (req: AuthRequest, res: Response) => {
 
     const workout = await Workout.findOneAndUpdate(
       { _id: id, userId },
-      { day, title, activities: cleanedActivities, lastCompletedDate },
+      { day, title, activities: cleanedActivities, lastCompletedDate, isSpecial },
       { new: true },
     );
 
@@ -131,13 +147,31 @@ export const updateWorkout = async (req: AuthRequest, res: Response) => {
         .json({ message: "Workout not found or unauthorized" });
     }
 
-    if (userId && lastCompletedDate) {
+    // Only log activity data for non-special (daily) menus
+    // Treat day === "Special" as special to ensure consistent behavior for all users
+    const isSpecialMenu = !!workout.isSpecial || workout.day === "Special";
+    if (userId && lastCompletedDate && !isSpecialMenu) {
       const todayStr = new Date().toDateString();
       const completedStr = new Date(lastCompletedDate).toDateString();
       if (todayStr === completedStr) {
+        // Skip logging if the menu's weekday hasn't arrived yet this week
+        const dayMap: Record<string, number> = {
+          Monday: 1, Tuesday: 2, Wednesday: 3, Thursday: 4,
+          Friday: 5, Saturday: 6, Sunday: 0,
+        };
+        const menuJsDay = dayMap[workout.day];
+        const todayJsDay = new Date().getDay();
+        const menuIdx = menuJsDay !== undefined ? (menuJsDay + 6) % 7 : -1;
+        const todayIdx = (todayJsDay + 6) % 7;
+        const isFutureDay = menuIdx > todayIdx;
+
+        if (!isFutureDay) {
+          // Record against the actual completion date (even if the menu is for a different weekday)
+          const recordDate = new Date();
+          recordDate.setHours(0, 0, 0, 0);
+
         try {
           const logsToInsert: any[] = [];
-          const timestamp = new Date();
 
           if (workout.activities && workout.activities.length > 0) {
             workout.activities.forEach((activity) => {
@@ -148,7 +182,7 @@ export const updateWorkout = async (req: AuthRequest, res: Response) => {
                 ) {
                   logsToInsert.push({
                     userId,
-                    date: timestamp,
+                    date: recordDate,
                     workoutTitle: workout.title,
                     activityName: activity.name,
                     parameter: set.parameter,
@@ -167,8 +201,9 @@ export const updateWorkout = async (req: AuthRequest, res: Response) => {
           console.error("✗ Failed to save workout logs:", logErr);
         }
 
-        await updateStreak(userId);
-        await storeDailyCompletion(userId);
+        await updateStreak(userId, recordDate);
+        await storeDailyCompletion(userId, recordDate);
+        }
       }
     }
 
@@ -179,17 +214,16 @@ export const updateWorkout = async (req: AuthRequest, res: Response) => {
   }
 };
 
-// Update user's daily streak based on last active date
-const updateStreak = async (userId: string) => {
+// Update user's daily streak based on the actual recording date
+const updateStreak = async (userId: string, recordDate: Date) => {
   try {
     const user = await User.findById(userId);
     if (!user) return;
 
-    const today = new Date();
     const todayDateOnly = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate(),
+      recordDate.getFullYear(),
+      recordDate.getMonth(),
+      recordDate.getDate(),
     );
 
     if (!user.lastActiveDate) {
@@ -255,47 +289,45 @@ const updateStreak = async (userId: string) => {
   }
 };
 
-/** Compute and persist the day's average completion % from all completed workouts. */
-const storeDailyCompletion = async (userId: string) => {
+/** Aggregate completion % across all daily menus completed on the recording date. */
+const storeDailyCompletion = async (userId: string, recordDate: Date) => {
   try {
-    const today = new Date();
-    const startOfDay = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate(),
-    );
-    const endOfDay = new Date(startOfDay.getTime() + 86400000);
+    const dateKey = recordDate.toISOString().slice(0, 10); // "YYYY-MM-DD"
+    const recordDateStr = recordDate.toDateString();
 
-    const completedToday = await Workout.find({
+    // Gather all daily (non-special) menus completed on this date
+    // Exclude records marked as special or with day === "Special" to cover legacy data
+    const allDaily = await Workout.find({
       userId,
-      lastCompletedDate: { $gte: startOfDay, $lt: endOfDay },
+      isSpecial: { $ne: true },
+      day: { $ne: "Special" },
+    });
+    const completedToday = allDaily.filter((w) => {
+      if (!w.lastCompletedDate) return false;
+      return new Date(w.lastCompletedDate).toDateString() === recordDateStr;
     });
 
-    if (!completedToday.length) return;
-
-    // Per activity: completed=100, partial=50, incomplete/none=0. Average sets → activity score.
-    const activityScores: number[] = [];
-    for (const w of completedToday) {
-      for (const act of w.activities) {
-        if (!act.sets.length) continue;
-        const setScores = act.sets.map((s) =>
-          s.status === "completed" ? 100 : s.status === "partial" ? 50 : 0,
+    // Average completion across all menus recorded today
+    const menuScores = completedToday.map((w) => {
+      const actScores = w.activities.map((act) => {
+        if (!act.sets.length) return 0;
+        const sum = act.sets.reduce(
+          (acc, s) => acc + (s.status === "completed" ? 100 : s.status === "partial" ? 50 : 0),
+          0,
         );
-        activityScores.push(
-          setScores.reduce((a, b) => a + b, 0) / setScores.length,
-        );
-      }
-    }
+        return sum / act.sets.length;
+      });
+      return actScores.length
+        ? actScores.reduce((a, b) => a + b, 0) / actScores.length
+        : 0;
+    });
 
-    const dayPct = activityScores.length
-      ? Math.round(
-          activityScores.reduce((a, b) => a + b, 0) / activityScores.length,
-        )
+    const avgPct = menuScores.length
+      ? Math.round(menuScores.reduce((a, b) => a + b, 0) / menuScores.length)
       : 0;
 
-    const dateKey = startOfDay.toISOString().slice(0, 10); // "YYYY-MM-DD"
     await User.findByIdAndUpdate(userId, {
-      $set: { [`dailyCompletions.${dateKey}`]: dayPct },
+      $set: { [`dailyCompletions.${dateKey}`]: avgPct },
     });
   } catch (err) {
     console.error("✗ Error storing daily completion:", (err as any).message);
